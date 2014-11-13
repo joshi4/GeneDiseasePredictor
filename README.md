@@ -21,6 +21,16 @@ Here are some resources on understanding the .vcf file format, its pretty simple
 
 ## TODO's 
 
+* Ask sandeep for the ontology (MGI) inforomation
+
 ## Nagging Questions 
 
 * working with .vcf files and .bed files ? 
+
+Answer: Going to have to convert the .vcf into a bed to run overlapSelect when doing it against ensembleGenes/codingExons. 
+First, Try ensemble genes. 
+
+So for my logistic regression i'll work on a vcf-feature vector extractor while for overlap select, the files will have to be converted to .bed 
+and then you need a feature extractor for the bed files. 
+
+Similar to Info in .vcf i think there's a field in bed to which we can tack on random stuff
