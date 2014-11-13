@@ -40,9 +40,15 @@ Similar to Info in .vcf i think there's a field in bed to which we can tack on r
 ### Steps
 
 1). Split vcf data into diseased and healthy
+
 2). Convert each to a .bed file with all the data we need
+
 3). Run a feature extractor on these bed files to get every feature we want
+
 4). Split data into testing and training
+
 5). Train
+
 6). Test
+
 7). Finish write-up
