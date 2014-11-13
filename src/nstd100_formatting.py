@@ -1,5 +1,6 @@
 import vcf
 import collections
+
 """
 This program takes in a .vcf file and augments its INFO section with other fields
 as needed for feature extraction. It also creates two files which are filtered to have only
