@@ -1,3 +1,5 @@
+import vcf
+import collections
 """
 This program takes in a .vcf file and augments its INFO section with other fields
 as needed for feature extraction. 
@@ -5,24 +7,61 @@ as needed for feature extraction.
 """
 
 DISEASED_SAMPLE_IDS="../dbVarData/nstd100_sampleID.txt"
+input_vcf_file = "../dbVarData/nstd100.vcf"
+output_vcf_file = "../dbVarData/nstd100.diseased.vcf"
 
 class DiseasedSampleID():
     def __init__(self, filename):
         """
         takes as argument |filename| and reads each line of the file.
-        convert the strings to int and put them in the set |self.sample_id_set| 
+        and puts each sample id in the set |self.sample_id_set| 
         REMEMBER: to remove the title string from the first line
         NOTE: the utilCode director has code to do this for you. 
+        IMP: the elements in the set are left as strings due to the format in .vcf file 
         """
         self.sample_id_set = set()
         with open(filename, 'r') as f:
             cnt = 0 
             for line in f:
-                self.sample_id_set.add(int(line.strip()))
+                self.sample_id_set.add(line.strip())
+
+def filter_vcf_for_diseased(input_vcf_file, diseased,output_vcf_file):
+    """
+    takes as argument |input_vcf_file| , |diseased| object of DiseasedSampleID class and |output_vcf_file|.
+    get a Reader object for |input_vcf_file| and modify the 
+    Reader.infos orderedDict to include any additional headers we want
+    in the new |output_vcf_file|. 
+
+    Info added:
+    1.  vcf_reader.infos['copyNumber'] =
+             _Info('copyNumber', 1, 'Integer', 'copy number taken from the .tab/.csv files and integrated into here', None, None)
+
+    Filtering:
+    1. use the |diseased| object to check if particular record is diseased or not. 
+       second check is to look at 'SAMPLESET' key in record.info and if it exists ensure it is 1.
+       if the sample ID is in the |diseased.sample_id_set| or 'SAMPLESET' == 1 then we accept. 
+
+    Write all filtered records to output_vcf_file 
+    """
+    vcf_reader = vcf.Reader(open(input_vcf_file, 'r'))
+    #modifying the infos dict to add new key in it. 
+    _Info = collections.namedtuple('Info', ['id', 'num', 'type', 'desc', 'source', 'version'])
+    vcf_reader.infos['copyNumber'] = _Info('copyNumber', 1, 'Integer', 'copy number taken from the .tab/.csv files and integrated into here', None, None)
+    vcf_writer = vcf.Writer(open(output_vcf_file, 'w'), vcf_reader)
+    cnt = 0 
+    for record in vcf_reader:
+        print cnt + 1
+        cnt += 1
+        if ('SAMPLESET' in record.INFO and record.INFO['SAMPLESET'] == 1) or \
+                ('SAMPLE' in record.INFO and record.INFO['SAMPLE'] in diseased.sample_id_set) :
+                    vcf_writer.write_record(record)
+
 
 
 def main():
     diseased = DiseasedSampleID(DISEASED_SAMPLE_IDS)
+    filter_vcf_for_diseased(input_vcf_file,diseased,  output_vcf_file)  
+
     print "set has %d elements" %(len(diseased.sample_id_set))
 
 
