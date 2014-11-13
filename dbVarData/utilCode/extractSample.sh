@@ -9,6 +9,7 @@
 cat ../samples_for_nstd100_1.csv | cut -d',' -f3 > tmp.txt #../nstd100_sampleID.txt
 sed '1d' tmp.txt > tmp2.txt # removing the tile line 
 sed 's/\"//g' tmp2.txt > ../nstd100_sampleID.txt
+rm tmp.txt tmp2.txt
 
 
 
