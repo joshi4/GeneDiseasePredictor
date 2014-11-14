@@ -24,7 +24,7 @@ files = [(input_diseased_bed_file, 'd'), (input_healthy_bed_file, 'h')]
 # A list of feature extracting functions (one for each feature). 
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
-listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExons]
+listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExonsFast]
 
 dataTesting = []
 dataTraining = []
@@ -42,7 +42,7 @@ for (file, result) in files:
 
 		# Temp, TODO, remove this
 		counter += 1
-		if counter >=5: break
+		if counter >=100: break
 
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
@@ -60,9 +60,8 @@ for (file, result) in files:
 			dataTesting.append((sparseFeatures, result))
 		print (sparseFeatures, result)
 
-
-print "Training data: %s " % dataTraining
-print "Testing data: %s " % dataTesting
+#print "Training data: %s " % dataTraining
+#print "Testing data: %s " % dataTesting
 # Save the results to pickle files
 pickle.dump(dataTraining, open("trainingSet.p", "wb" ))
 pickle.dump(dataTesting, open("testingSet.p", "wb" ))
