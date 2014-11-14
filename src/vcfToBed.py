@@ -25,6 +25,6 @@ for file in files_to_convert:
 		start = record.POS
 		end = record.INFO["END"]
 		svtype = record.INFO["SVTYPE"]
-        unique_id = record.ID
-		f_out.write("chrom%s\t%s\t%s\t%s;%s\n" % (chrom, start, end, svtype,unique_id))
+		unique_id = record.ID
+		f_out.write("chr%s\t%s\t%s\t%s;%s\n" % (chrom, start, end, svtype,unique_id) )
 	f_out.close()

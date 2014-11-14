@@ -18,37 +18,38 @@ def chromosome(bedLine):
 	"chrom1" or "chrom2" or "chrom20"
 	"""
 	chrom = bedLine[0].lower()
-	return chrom
+	return (chrom, 1)
 
 
 # TODO, need to calculate better thresholds for length, use histogram to equally seperate them?
 def cnvLength(bedLine):
 	"""
-	Length of CNV, grouped into 5 equally sized groups
+	Length of CNV, grouped into 5 equally sized groups* Still need to work out group thresholds
 	"""
 	start = int(bedLine[1])
 	end = int(bedLine[2])
 	length = end - start
 	if length < 1000:
-		return "lessThan1,000"
+		return ("lessThan1,000", 1)
 	elif length < 10000:
-		return "lessThan10,000"
+		return ("lessThan10,000", 1)
 	elif length < 100000:
-		return "lessThan100,000"
+		return ("lessThan100,000", 1)
 	elif length < 500000:
-		return "lessThan500,000"
+		return ("lessThan500,000", 1)
 	elif length < 1000000:
-		return "lessThan1000,000"
+		return ("lessThan1000,000", 1)
 	else:
-		return "greaterThan1000,000"
+		return ("greaterThan1000,000", 1)
 
 
 def svType(bedLine):
 	"""
 	The type of CNV change - insertion or duplicate or deletion
 	"""
-	svType = bedLine[3].lower()
-	return 
+	info = bedLine[3].split(";")
+	svType = info[0].lower()
+	return (svType, 1)
 
 
 def overlapWithCodingExons(bedLine):
@@ -59,7 +60,7 @@ def overlapWithCodingExons(bedLine):
 	# Run overlapSelect
 	numberOverlaps = checkOverlap(bedLine, fileToOverlapWith)
 	if numberOverlaps > 0:
-		return "overlapsWithCodingExcons"
+		return ("overlapsWithCodingExcons", 1)
 	else:
 		return False
 
