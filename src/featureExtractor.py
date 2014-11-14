@@ -15,14 +15,15 @@ input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 # To loop through the files
 files = [(input_diseased_bed_file, 'd'), (input_healthy_bed_file, 'h')]
 
-# A list of feature functions. Each must take the .bed line as arguent, and return the string key that is to be set to 1
-# These functions are defined in features.py and must have the same argument, return type structure
+# A list of feature extracting functions (one for each feature). 
+# Each must take the .bed line as argument, and return the string key that is to be set to 1
+# These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExons]
 
 # Loop through each file
 for (file, result) in files:
 	# Each line is a tuple of (features, result) where:
-	#	features is a collection of indicator features
+	#	features is a collection of features (sparse representation)
 	# 	value is 'd' or 'h' (diseased or healthy)
 	# The entire feature set is a list of these tuples
 	
@@ -39,8 +40,8 @@ for (file, result) in files:
 
 		# Add this entry into the set
 		data.append((sparseFeatures, result))
-		break
+		print (sparseFeatures, result)
 
-	print data
+	#print data
 	# Save the results to pickle file
 	#pickle.dump( data, open( file+"orfs.p", "wb" ) )

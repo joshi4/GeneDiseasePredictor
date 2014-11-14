@@ -7,7 +7,7 @@ Combined project for CS273A and CS221.
 
 1. Split vcf data into diseased and healthy DONE
 2. Convert each to a .bed file with all the data we need DONE (added a unique field ) 
-3. Run a feature extractor on these bed files to get every feature we want
+3. Run a feature extractor on these bed files to get every feature we want IN PROGRESS (featureExtractor.py)
 4. Split data into testing and training DONE 
 5. Train
 6. Test

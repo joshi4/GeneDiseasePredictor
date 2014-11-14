@@ -9,7 +9,7 @@ argument: 1 argument being the information in the bed line, split by whitespace 
 return: a key string that must be set to 1.
 """
 
-overlapSelectPath = "../../tools/overlapSelect"
+overlapSelectPath = "../../../tools/overlapSelect"
 
 def chromosome(bedLine):
 	"""
