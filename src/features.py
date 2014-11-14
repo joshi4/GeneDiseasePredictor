@@ -60,11 +60,13 @@ def overlapWithCodingExons(bedLine):
 	numberOverlaps = checkOverlap(bedLine, fileToOverlapWith)
 	if numberOverlaps > 0:
 		return "overlapsWithCodingExcons"
+	else:
+		return False
 
 
 def checkOverlap(bedLine, fileToOverlapWith):
 	"""
-	General function to check the number of overlaps between two files
+	General function to check the number of overlaps between our bed enrty |bedLine| and another .bed file |fileToOverlapWith|
 	"""
 
 	# First create a temporary one line .bed file
