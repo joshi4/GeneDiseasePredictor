@@ -5,7 +5,9 @@ import collections
 This file converts .vcf files to .bed files, so we can then run them through the feature extractor
 each output .bed line contains:
 
-chrom 	start	end 	svtype
+chrom 	start	end 	name
+
+We use the name column to tack on all the data here: svtype;uniqueID
 
 This should be all the information we need for our feature extractor
 """
@@ -23,5 +25,6 @@ for file in files_to_convert:
 		start = record.POS
 		end = record.INFO["END"]
 		svtype = record.INFO["SVTYPE"]
-		f_out.write("chrom%s\t%s\t%s\t%s\n" % (chrom, start, end, svtype))
+                unique_id = record.ID
+		f_out.write("chrom%s\t%s\t%s\t%s;%s\n" % (chrom, start, end, svtype,unique_id))
 	f_out.close()
