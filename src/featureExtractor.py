@@ -6,8 +6,10 @@ import random
 
 """
 This file takes in .bed files and extracts features from it using features.py
-IT also splits the results into a testing set and a training set, based on |PercentageOfSetForTraining|
-It saves the result to pickle files for later use
+It also splits the results into a testing set and a training set, based on |PercentageOfSetForTraining|
+It saves the result to pickle files:
+trainingSet.p
+testingSet.p
 """
 
 PercentageOfSetForTraining = 80 # A percentage
@@ -47,7 +49,7 @@ for (file, result) in files:
 		
 		for featureFunc in listOfFeatures:
 			key = featureFunc(lineList)
-			if key: sparseFeatures[key] += 1
+			if key: sparseFeatures[key] = 1
 
 		# Add this entry into the training/testing set
 		if(random.randint(1,100) <= PercentageOfSetForTraining):
@@ -57,8 +59,8 @@ for (file, result) in files:
 		print (sparseFeatures, result)
 
 
-print dataTraining
-print dataTesting
+print "Training data: %s " % dataTraining
+print "Testing data: %s " % dataTesting
 # Save the results to pickle files
 pickle.dump(dataTraining, open("trainingSet.p", "wb" ))
 pickle.dump(dataTesting, open("testingSet.p", "wb" ))
