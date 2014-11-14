@@ -51,7 +51,6 @@ def svType(bedLine):
 	svType = info[0].lower()
 	return (svType, 1)
 
-
 def overlapWithCodingExonsFast(bedLine):
 	"""
 	This checks if the CNV overlaps with any known coding exons
@@ -59,8 +58,10 @@ def overlapWithCodingExonsFast(bedLine):
 
 	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-healthy.bed"
 	numberOverlaps = checkOverlapUsingFile(bedLine, fileWithOverlaps)
+	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-disease.bed"
+	numberOverlaps += checkOverlapUsingFile(bedLine, fileWithOverlaps)
 	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", 1)
+		return ("overlapsWithCodingExcons", numberOverlaps)
 	else:
 		return False
 
@@ -72,12 +73,16 @@ def overlapWithCodingExons(bedLine):
 	# Run overlapSelect
 	numberOverlaps = checkOverlap(bedLine, fileToOverlapWith)
 	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", 1)
+		return ("overlapsWithCodingExcons", numberOverlaps)
 	else:
 		return False
 
 
 def checkOverlapUsingFile(bedLine, fileWithOverlaps):
+	"""
+	General function that searches a |fileWithOverlaps| for the ID in |bedLine|
+	|fileWithOverlaps| is a precomputed overlap file
+	"""
 	info = bedLine[3].split(";")
 	ID = info[1]
 	resultsFile = "tempResults.bed"
