@@ -42,8 +42,8 @@ for (file, result) in files:
 	for line in fin:
 
 		# Temp, TODO, remove this
-		counter += 1
-		if counter >=20: break
+		#counter += 1
+		#if counter >=20: break
 
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
@@ -59,10 +59,10 @@ for (file, result) in files:
 			dataTraining.append((sparseFeatures, result))
 		else:
 			dataTesting.append((sparseFeatures, result))
-		print (sparseFeatures, result)
+		# print (sparseFeatures, result)
 
 #print "Training data: %s " % dataTraining
 #print "Testing data: %s " % dataTesting
 # Save the results to pickle files
-pickle.dump(dataTraining, open("trainingSet.p", "wb" ))
+pickle.dump(dataTraining, open("trainingSet.p", "wb" ))	
 pickle.dump(dataTesting, open("testingSet.p", "wb" ))

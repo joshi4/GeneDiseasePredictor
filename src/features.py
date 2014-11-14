@@ -6,7 +6,7 @@ This file has a function for each feature that we want to extract
 They must follow the structure:
 
 argument: 1 argument being the information in the bed line, split by whitespace (a list)
-return: a key string that must be set to 1.
+return: a (key, value) tuple where key is the key and value is the features value (this is 1 for indicator variables)
 """
 
 overlapSelectPath = "../../../tools/overlapSelect"
