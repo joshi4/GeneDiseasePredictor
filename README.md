@@ -6,9 +6,9 @@ Combined project for CS273A and CS221.
 ### Steps
 
 1. Split vcf data into diseased and healthy DONE
-2. Convert each to a .bed file with all the data we need DONE
+2. Convert each to a .bed file with all the data we need DONE (added a unique field ) 
 3. Run a feature extractor on these bed files to get every feature we want
-4. Split data into testing and training
+4. Split data into testing and training DONE 
 5. Train
 6. Test
 7. Finish write-up
@@ -25,6 +25,8 @@ So for my logistic regression i'll work on a vcf-feature vector extractor while 
 and then you need a feature extractor for the bed files. 
 
 Similar to Info in .vcf i think there's a field in bed to which we can tack on random stuff
+
+* confirm the meaning of same chrom,start,end but different nssv id ? 
 
 ### Notes
 
