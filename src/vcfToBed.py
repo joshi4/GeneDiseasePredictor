@@ -15,7 +15,9 @@ This should be all the information we need for our feature extractor
 #original_vcf_file = "../dbVarData/nstd100.vcf"
 input_diseased_vcf_file = "../dbVarData/nstd100.diseased.vcf"
 input_healthy_vcf_file = "../dbVarData/nstd100.healthy.vcf"
-files_to_convert = [input_diseased_vcf_file, input_healthy_vcf_file]
+input_vcf_file = "../dbVarData/nstd100.vcf"
+
+files_to_convert = [input_vcf_file, input_diseased_vcf_file, input_healthy_vcf_file]
 
 for file in files_to_convert:
 	f_out = open(file+".bed", 'w')
