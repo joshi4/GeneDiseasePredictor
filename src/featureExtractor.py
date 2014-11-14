@@ -48,8 +48,10 @@ for (file, result) in files:
 		lineList = line.split()
 		
 		for featureFunc in listOfFeatures:
-			(key, value) = featureFunc(lineList)
-			if key: sparseFeatures[key] = value
+			feature = featureFunc(lineList)
+			if feature:
+				(key, value) = feature
+				if key: sparseFeatures[key] = value
 
 		# Add this entry into the training/testing set
 		if(random.randint(1,100) <= PercentageOfSetForTraining):
