@@ -11,6 +11,18 @@ return: a key string that must be set to 1.
 
 overlapSelectPath = "../../../tools/overlapSelect"
 
+def startPosition(bedLine):
+	"""
+	"""
+	start = int(bedLine[1])
+	return ("start", start)
+
+def endPosition(bedLine):
+	"""
+	"""
+	end = int(bedLine[2])
+	return ("end", end)
+
 def chromosome(bedLine):
 	"""
 	Chromosome number feature.
@@ -20,6 +32,13 @@ def chromosome(bedLine):
 	chrom = bedLine[0].lower()
 	return (chrom, 1)
 
+def length(bedLine):
+	"""
+	"""
+	start = int(bedLine[1])
+	end = int(bedLine[2])
+	length = end - start
+	return ("length", length)
 
 # TODO, need to calculate better thresholds for length, use histogram to equally seperate them?
 def cnvLength(bedLine):
@@ -61,7 +80,7 @@ def overlapWithCodingExonsFast(bedLine):
 	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-disease.bed"
 	numberOverlaps += checkOverlapUsingFile(bedLine, fileWithOverlaps)
 	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", numberOverlaps)
+		return ("overlapsWithCodingExcons", 1)
 	else:
 		return False
 

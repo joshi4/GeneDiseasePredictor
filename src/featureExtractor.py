@@ -25,6 +25,7 @@ files = [(input_diseased_bed_file, 'd'), (input_healthy_bed_file, 'h')]
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExonsFast]
+BaseLineFeatures = [features.chromosome, features.startPosition, features.cnvLength, features.svType, features.endPosition, features.length]
 
 dataTesting = []
 dataTraining = []
@@ -42,12 +43,12 @@ for (file, result) in files:
 
 		# Temp, TODO, remove this
 		counter += 1
-		if counter >=100: break
+		if counter >=20: break
 
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
 		
-		for featureFunc in listOfFeatures:
+		for featureFunc in BaseLineFeatures:
 			feature = featureFunc(lineList)
 			if feature:
 				(key, value) = feature
