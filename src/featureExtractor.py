@@ -6,10 +6,11 @@ import random
 
 """
 This file takes in .bed files and extracts features from it using features.py
+IT also splits the results into a testing set and a training set, based on |PercentageOfSetForTraining|
 It saves the result to pickle files for later use
 """
 
-FractionOfSetForTraining = 80 # A percentage
+PercentageOfSetForTraining = 80 # A percentage
 
 # Two input files, diseased or healthy in .bed format
 input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
@@ -19,7 +20,7 @@ input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 files = [(input_diseased_bed_file, 'd'), (input_healthy_bed_file, 'h')]
 
 # A list of feature extracting functions (one for each feature). 
-# Each must take the .bed line as argument, and return the string key that is to be set to 1
+# Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExons]
 
@@ -27,19 +28,20 @@ dataTesting = []
 dataTraining = []
 
 # Loop through each file
-counter = 0
 for (file, result) in files:
 	# Each line is a tuple of (features, result) where:
 	#	features is a collection of features (sparse representation)
 	# 	value is 'd' or 'h' (diseased or healthy)
 	# The entire feature set is a list of these tuples
-	
-	# Temp, TODO, remove this
-	counter += 1
-	if counter >=5: break
 
+	counter = 0
 	fin = open(file, 'r')
 	for line in fin:
+
+		# Temp, TODO, remove this
+		counter += 1
+		if counter >=5: break
+
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
 		
@@ -47,8 +49,8 @@ for (file, result) in files:
 			key = featureFunc(lineList)
 			if key: sparseFeatures[key] += 1
 
-		# Add this entry into the set
-		if(random.randint(1,100) <= FractionOfSetForTraining):
+		# Add this entry into the training/testing set
+		if(random.randint(1,100) <= PercentageOfSetForTraining):
 			dataTraining.append((sparseFeatures, result))
 		else:
 			dataTesting.append((sparseFeatures, result))
