@@ -50,8 +50,11 @@ def filter_and_augment_vcf(input_vcf_file,diseased,output_diseased_vcf_file, out
     """
     vcf_reader = vcf.Reader(open(input_vcf_file, 'r'))
     #modifying the infos dict to add new key in it. 
+    # I don't understand these lines
+    # ??
     _Info = collections.namedtuple('Info', ['id', 'num', 'type', 'desc', 'source', 'version'])
     vcf_reader.infos['copyNumber'] = _Info('copyNumber', 1, 'Integer', 'copy number taken from the .tab/.csv files and integrated into here', None, None)
+    # ??
     vcf_diseased_writer = vcf.Writer(open(output_diseased_vcf_file, 'w'), vcf_reader)
     vcf_healthy_writer = vcf.Writer(open(output_healthy_vcf_file, 'w'), vcf_reader)
 
