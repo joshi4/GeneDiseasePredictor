@@ -110,7 +110,7 @@ def checkOverlapUsingFile(bedLine, fileWithOverlaps):
 		numberOfOverlapLines = sum(1 for line in open(resultsFile))
 		return numberOfOverlapLines
 	except IOError:
-		return 0;
+		return 0
 
 def checkOverlap(bedLine, fileToOverlapWith):
 	"""
@@ -134,7 +134,3 @@ def checkOverlap(bedLine, fileToOverlapWith):
 		os.system('rm -f %s' % (tempFile))
 		print "Error with command: %s %s %s %s" % (overlapSelectPath, fileToOverlapWith, tempFile, outputFile)
 		return 0
-
-
-
-
