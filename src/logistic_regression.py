@@ -1,0 +1,141 @@
+import collections 
+import math
+import util
+import pickle 
+"""
+Given the ./testingSet.p and ./trainigSet.p binary files 
+this file runs logistic regression on trainingSet and tests the performance of 
+the weights learned from ./testingSet.p 
+
+Data stored in the pickled file is [ (features, result)] where result is 1  or -1. 
+1 => diseased 
+-1 => healthy -1. 
+
+for description of features see features.py and featureExtractor.py 
+"""
+pickled_testing_file = "./testingSet.p"
+pickled_training_file = "./trainingSet.p"
+
+class HingeLossClassifier():
+    """
+    This class is an abstraction that trains a SVM 
+    classifier on a given training data set 
+    and provides methods to evaluate the performance. 
+    uses a regularization parameter lambda and hyperparameter eta.
+    """
+    def __init__(self):
+       self.weights = collections.Counter() # feature => weight mapping. 
+       self.numIters = 10 # number of iterations for Stochastic Gradient Descent. 
+       self.eta = 0.9 # hyper-parameter.
+       self.lambda_value = 0.8
+   
+
+    def predict(self,feature):
+       """
+       @param feature: feature vector for the test example
+       returns +1/-1 : diseased/healthy , which is the sign of the score. 
+       """
+
+       score = util.dot_product(self.weights, feature) 
+       if score > 0: 
+           return 1
+       return -1
+
+    def calculate_margin(self,feature,weight,training_label):
+       score = util.dot_product(weight,feature)
+       return training_label* score 
+
+    def update_weights_with_derivative(self,feature,weight,training_label):
+       util.increment(weight,self.eta * training_label, feature) 
+       util.increment(weight,-2*self.lambda_value,weight) # regularization factor
+
+    def learn_boundary(self, pickled_training_file):
+       """
+       this is the main function of this class and is callled by the user 
+       to learn the boundary.
+
+       args: |pickled_training_file| binary file with data on all trianing examples 
+       with featuers already extracted [(features, label)]. Refer to beginning of this file. 
+       """
+
+       training_examples = pickle.load(open(pickled_training_file ,'rb'))
+       for i in xrange(self.numIters):
+           print "iteration number = " , i 
+           for feature,label in training_examples:
+               margin = self.calculate_margin(feature, self.weights, label) 
+               if margin < 1.0:
+                   self.update_weights_with_derivative(feature,self.weights,label)
+
+class LogisticRegression():
+    """
+    This class is an abstraction that trains a logistic regression classifier
+    on a given training data set and provides methods to evaluate its performance 
+    """
+    def __init__(self):
+        self.weights = collections.Counter()
+        self.numIters = 10 # num of iterations for SGD
+        self.eta = 0.9 # hyper-parameter
+
+    def logistic_func(self, feature):
+        score = util.dot_product(self.weights, feature)
+        try:
+            result = 1.0/(1 + math.exp(-1*score))
+            return result
+        except Exception:
+            return 1.0
+         
+
+    def predict(self,feature):
+        """
+        @param feature: feature vector for test example,
+        returns +1/-1 based on the sign of the score 
+        +1 -> diseased test case and vice versa. 
+        """
+        score = self.logistic_func(feature)
+        if score > 0: 
+            return 1
+        return -1
+
+    def calculate_margin(self,feature,weight,training_label):
+       score = self.logistic_func(feature)
+       return training_label -  score 
+
+    def update_weights_with_derivative(self, feature,weight,training_label):
+       """
+       if loss function is 1/1 + e^-score then the S.G.D update courtesy of CS229 notes is 
+           w_j = w_j + eta*(label - 1/1_e^-score)*feature_vector
+       where z is the margin. 
+       """
+       margin = self.calculate_margin(feature,weight,training_label)
+       util.increment(weight,self.eta * margin, feature)  
+
+
+    def learn_boundary(self, pickled_training_file):
+        """
+        @params pickled_training_file : [ (feature,label)] format
+        Goes through each training case, updating the weight params according to the model
+        """
+        
+        training_examples = pickle.load(open(pickled_training_file ,'rb'))
+        for i in xrange(self.numIters):
+            print "iteration number = " , i 
+            for feature,label in training_examples:
+                self.update_weights_with_derivative(feature,self.weights,label)
+
+def main():
+    #hl = HingeLossClassifier()
+    #hl.learn_boundary(pickled_training_file)
+    #util.evaluate(pickled_testing_file, hl.predict)
+    #print hl.weights 
+
+    lr = LogisticRegression()
+    lr.learn_boundary(pickled_training_file)
+    util.evaluate(pickled_testing_file, lr.predict) 
+    print lr.weights 
+
+
+if __name__ == '__main__':
+    main()
+
+
+

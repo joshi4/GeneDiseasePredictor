@@ -19,12 +19,13 @@ input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
 input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 
 # To loop through the files
-files = [(input_diseased_bed_file, 'd'), (input_healthy_bed_file, 'h')]
+files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 
 # A list of feature extracting functions (one for each feature). 
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
-listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.overlapWithCodingExonsFast]
+listOfFeatures = [features.chromosome, features.cnvLength, features.svType, \
+        features.overlapWithCodingExonsFast, features.startPosition, features.endPosition]
 BaseLineFeatures = [features.chromosome, features.startPosition, features.cnvLength, features.svType, features.endPosition, features.length]
 
 dataTesting = []
@@ -48,7 +49,7 @@ for (file, result) in files:
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
 		
-		for featureFunc in BaseLineFeatures:
+		for featureFunc in BaseLineFeatures: #BaselineFeatures
 			feature = featureFunc(lineList)
 			if feature:
 				(key, value) = feature
