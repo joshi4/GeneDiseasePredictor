@@ -70,6 +70,19 @@ def svType(bedLine):
 	svType = info[0].lower()
 	return (svType, 1)
 
+
+diseasedOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/diseased.p' ,'rb'))
+healthyOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/healthy.p' ,'rb'))
+def overlapWithCodingExonsFastest(bedLine):
+	info = bedLine[3].split(";")
+	uniqeId = info[1]
+	numOverlaps = diseasedOverlapWithExons[uniqeId]
+	numOverlaps += healthyOverlapWithExons[uniqeId]
+	if numOverlaps > 0:
+		return ("overlapsWithCodingExons", numOverlaps)
+	else:
+		return False
+
 def overlapWithCodingExonsFast(bedLine):
 	"""
 	This checks if the CNV overlaps with any known coding exons
@@ -80,7 +93,7 @@ def overlapWithCodingExonsFast(bedLine):
 	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-disease.bed"
 	numberOverlaps += checkOverlapUsingFile(bedLine, fileWithOverlaps)
 	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", 1)
+		return ("overlapsWithCodingExons", 1)
 	else:
 		return False
 

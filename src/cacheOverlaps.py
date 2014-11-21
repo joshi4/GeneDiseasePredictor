@@ -14,7 +14,7 @@ input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 inoutFiles = [(input_diseased_bed_file,"diseased"),(input_healthy_bed_file,"healthy")]
 
 # All the foldernames that have overlap .bed files
-folders = ["knownGeneCodingExons"]
+folders = ["knownGenesCodingExons"]
 for folder in folders:
 	path = "../overlapBEDFiles/%s" % folder
 	fileToOverlapWith = "%s/baseToOverlapWith.bed" % path
@@ -28,7 +28,7 @@ for folder in folders:
 			print "Error with command: %s %s %s %s" % (overlapSelectPath, fileToOverlapWith, inputFile, output)
 		# Now read in the overlap files and convert them to python Counter, with uniqueID=>#Overlaps
 		fin = open(output, 'r')
-		data = Counter()
+		data = collections.Counter()
 		for line in fin:
 			metaList = line.split()[3].split(";")
 			uniqueId = metaList[1]
