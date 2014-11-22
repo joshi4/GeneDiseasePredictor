@@ -1,4 +1,5 @@
 import os
+import pickle
 
 """
 This file has a function for each feature that we want to extract
@@ -70,71 +71,15 @@ def svType(bedLine):
 	svType = info[0].lower()
 	return (svType, 1)
 
-def overlapWithCodingExonsFast(bedLine):
-	"""
-	This checks if the CNV overlaps with any known coding exons
-	"""
 
-	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-healthy.bed"
-	numberOverlaps = checkOverlapUsingFile(bedLine, fileWithOverlaps)
-	fileWithOverlaps = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons-disease.bed"
-	numberOverlaps += checkOverlapUsingFile(bedLine, fileWithOverlaps)
-	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", 1)
-	else:
-		return False
-
-def overlapWithCodingExons(bedLine):
-	"""
-	This checks if the CNV overlaps with any known coding exons
-	"""
-	fileToOverlapWith = "../overlapBEDFiles/knownGenesCodingExons/knownGenesCodingExons.bed"
-	# Run overlapSelect
-	numberOverlaps = checkOverlap(bedLine, fileToOverlapWith)
-	if numberOverlaps > 0:
-		return ("overlapsWithCodingExcons", numberOverlaps)
-	else:
-		return False
-
-
-def checkOverlapUsingFile(bedLine, fileWithOverlaps):
-	"""
-	General function that searches a |fileWithOverlaps| for the ID in |bedLine|
-	|fileWithOverlaps| is a precomputed overlap file
-	"""
+diseasedOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/diseased.p' ,'rb'))
+healthyOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/healthy.p' ,'rb'))
+def overlapWithCodingExonsFastest(bedLine):
 	info = bedLine[3].split(";")
-	ID = info[1]
-	resultsFile = "tempResults.bed"
-	try:
-		os.system("grep '%s' %s > %s" % (ID, fileWithOverlaps, resultsFile))
-		numberOfOverlapLines = sum(1 for line in open(resultsFile))
-		return numberOfOverlapLines
-	except IOError:
-		return 0;
-
-def checkOverlap(bedLine, fileToOverlapWith):
-	"""
-	General function to check the number of overlaps between our bed enrty |bedLine| and another .bed file |fileToOverlapWith|
-	"""
-
-	# First create a temporary one line .bed file
-	tempFile = "temp.bed"
-	fout = open(tempFile, 'w')
-	line = "\t".join(bedLine[:-1])+"\n"
-	fout.write(line)
-	fout.close()
-	outputFile = "result.bed"
-	os.system('%s %s %s %s' % (overlapSelectPath, fileToOverlapWith, tempFile, outputFile))
-
-	try:
-		numberOfOverlapLines = sum(1 for line in open(outputFile))
-		os.system('rm -f %s %s' % (outputFile, tempFile))
-		return numberOfOverlapLines
-	except IOError:
-		os.system('rm -f %s' % (tempFile))
-		print "Error with command: %s %s %s %s" % (overlapSelectPath, fileToOverlapWith, tempFile, outputFile)
-		return 0
-
-
-
-
+	uniqeId = info[1]
+	numOverlaps = diseasedOverlapWithExons[uniqeId]
+	numOverlaps += healthyOverlapWithExons[uniqeId]
+	if numOverlaps > 0:
+		return ("overlapsWithCodingExons", numOverlaps)
+	else:
+		return False
