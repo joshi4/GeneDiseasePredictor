@@ -121,22 +121,6 @@ def append_features_and_target_vista(filename, X, y, score, skip):
       X.append([mkChrToFloat(row[0]), float(row[1]) / 100000.0, float(row[2]) / 100000.0, np.log10(float((int(row[2]) - int(row[1])))), mkCnvTypeToFloat(cnvType), numEnhancers, enhancerScore])
       y.append(score)
 
-def append_features_and_target_broad(filename, X, y, score, skip):
-  with open(filename) as f:
-    reader = csv.reader(f, delimiter='\t')
-    for row in reader:
-      if (randrange(skip) != 0):
-        continue
-      typeWithAnnotation = row[3]
-      cnvType = row[3].split(';')[0]
-      start = int(row[1])
-      end = int(row[2])
-      addMinChrom(row[0], start)
-      addMaxChrom(row[0], end)
-      numEnhancers, enhancerTypes = broadEnhancers(row[0], int(row[1]), int(row[2]))
-      X.append([mkChrToFloat(row[0]), np.log(float((int(row[2]) - int(row[1])))), mkCnvTypeToFloat(cnvType), numEnhancers, enhancerTypes])
-      y.append(score)
-
 def load_features_and_target(baseline, skipDiseased, skipHealthy):
   X = []
   y = []
@@ -189,13 +173,13 @@ def run(X, y, numDiseased, numHealthy, kernel, classifier):
   elif classifier == 'lr':
     method = LogisticRegression(class_weight={-1:1, 1:diseasedWeight})
   wclf = method.fit(X_train, y_train)
-  y_score_bin = wclf.predict(X_test)
+  y_pred = wclf.predict(X_test)
   print('classification completed; starting validation')
-  accuracy = accuracy_score(y_score_bin, y_test)
+  accuracy = accuracy_score(y_test, y_pred)
   print 'Accuracy: ' + str(accuracy * 100) + '%'
-  precision = precision_score(y_score_bin, y_test)
+  precision = precision_score(y_test, y_pred)
   print 'Precision (prob. of diagnosis being true): ' + str(precision * 100) + '%'
-  recall = recall_score(y_score_bin, y_test)
+  recall = recall_score(y_test, y_pred)
   print 'Recall (percentage of correctly diagnosed out of all cases): ' + str(recall * 100) + '%'
   return X, y, wclf
 
@@ -267,5 +251,5 @@ def printRegionsBED(regions, filename):
     f.write(t[0] + '\t' + str(t[1]) + '\t' + str(t[2]) + '\n')
   f.close()
 
-if __name__ == "__main__":
-  printRegionsBED(findKnnRegions(), 'knnRegions.bed')
+# if __name__ == "__main__":
+#   printRegionsBED(findKnnRegions(), 'knnRegions.bed')
