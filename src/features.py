@@ -59,7 +59,7 @@ def cnvLength(bedLine):
 	elif length < 1000000:
 		return ("lessThan1000,000", 1)
 	else:
-		return ("greaterThan1000,000", 1)
+		return ("greaterThan1,000,000", 1)
 
 
 def svType(bedLine):

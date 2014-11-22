@@ -26,7 +26,8 @@ files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 # These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, \
         features.overlapWithCodingExonsFast, features.startPosition, features.endPosition]
-BaseLineFeatures = [features.chromosome, features.startPosition, features.cnvLength, features.svType, features.endPosition, features.length]
+#BaseLineFeatures = [features.chromosome, features.startPosition, features.cnvLength, features.svType, features.endPosition, features.length]
+BaseLineFeaturesStripped = [features.chromosome, features.cnvLength, features.svType]
 
 dataTesting = []
 dataTraining = []
@@ -49,7 +50,7 @@ for (file, result) in files:
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
 		
-		for featureFunc in BaseLineFeatures: #BaselineFeatures
+		for featureFunc in BaseLineFeaturesStripped: #BaselineFeatures
 			feature = featureFunc(lineList)
 			if feature:
 				(key, value) = feature

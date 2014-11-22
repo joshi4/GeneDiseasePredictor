@@ -16,6 +16,7 @@ Combined project for CS273A and CS221.
 ## TODO's 
 
 * Ask sandeep for the ontology (MGI) inforomation
+* Always predict healthy --> expect to get very good accuracy, run this for the poster session. 
 
 ## Nagging Questions 
 
@@ -27,6 +28,8 @@ and then you need a feature extractor for the bed files.
 Similar to Info in .vcf i think there's a field in bed to which we can tack on random stuff
 
 * confirm the meaning of same chrom,start,end but different nssv id ? 
+* Ask Sandeep about overlap with coding exons right now we can say it overlapped with A coding exon, but we want to know which ones as well? 
+
 
 ### Notes
 

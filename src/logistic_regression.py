@@ -75,14 +75,13 @@ class LogisticRegression():
         self.weights = collections.Counter()
         self.numIters = 10 # num of iterations for SGD
         self.eta = 0.9 # hyper-parameter
+        self.predictDiseased = 0 
 
-    def logistic_func(self, feature):
-        score = util.dot_product(self.weights, feature)
-        try:
-            result = 1.0/(1 + math.exp(-1*score))
-            return result
-        except Exception:
-            return 1.0
+    def logistic_func(self, margin):
+        #if margin > 10000:
+        #    return 0.0
+        result = 1.0/(1 + math.exp(margin))
+        return result
          
 
     def predict(self,feature):
@@ -91,14 +90,15 @@ class LogisticRegression():
         returns +1/-1 based on the sign of the score 
         +1 -> diseased test case and vice versa. 
         """
-        score = self.logistic_func(feature)
+        score = util.dot_product(self.weights, feature)
         if score > 0: 
+            self.predictDiseased += 1
             return 1
         return -1
 
-    def calculate_margin(self,feature,weight,training_label):
-       score = self.logistic_func(feature)
-       return training_label -  score 
+    def calculate_margin(self,feature,weights,training_label):
+       score = util.dot_product(weights, feature)
+       return training_label*score *1.0
 
     def update_weights_with_derivative(self, feature,weight,training_label):
        """
@@ -107,7 +107,8 @@ class LogisticRegression():
        where z is the margin. 
        """
        margin = self.calculate_margin(feature,weight,training_label)
-       util.increment(weight,self.eta * margin, feature)  
+       update_coeff = self.logistic_func(margin)*training_label
+       util.increment(weight,self.eta * update_coeff, feature)  
 
 
     def learn_boundary(self, pickled_training_file):
@@ -123,15 +124,16 @@ class LogisticRegression():
                 self.update_weights_with_derivative(feature,self.weights,label)
 
 def main():
-    #hl = HingeLossClassifier()
-    #hl.learn_boundary(pickled_training_file)
-    #util.evaluate(pickled_testing_file, hl.predict)
-    #print hl.weights 
-
+#    hl = HingeLossClassifier()
+#    hl.learn_boundary(pickled_training_file)
+#    util.evaluate(pickled_testing_file, hl.predict)
+#    print hl.weights 
+#
     lr = LogisticRegression()
     lr.learn_boundary(pickled_training_file)
     util.evaluate(pickled_testing_file, lr.predict) 
     print lr.weights 
+    print lr.predictDiseased 
 
 
 if __name__ == '__main__':
