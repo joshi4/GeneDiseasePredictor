@@ -78,8 +78,6 @@ class LogisticRegression():
         self.predictDiseased = 0 
 
     def logistic_func(self, margin):
-        #if margin > 10000:
-        #    return 0.0
         result = 1.0/(1 + math.exp(margin))
         return result
          
@@ -93,6 +91,7 @@ class LogisticRegression():
         score = util.dot_product(self.weights, feature)
         if score > 0: 
             self.predictDiseased += 1
+            print "score is > 1 yay!" 
             return 1
         return -1
 
@@ -124,16 +123,16 @@ class LogisticRegression():
                 self.update_weights_with_derivative(feature,self.weights,label)
 
 def main():
-#    hl = HingeLossClassifier()
-#    hl.learn_boundary(pickled_training_file)
-#    util.evaluate(pickled_testing_file, hl.predict)
-#    print hl.weights 
-#
-    lr = LogisticRegression()
-    lr.learn_boundary(pickled_training_file)
-    util.evaluate(pickled_testing_file, lr.predict) 
-    print lr.weights 
-    print lr.predictDiseased 
+    hl = HingeLossClassifier()
+    hl.learn_boundary(pickled_training_file)
+    util.evaluate(pickled_testing_file, hl.predict)
+    print hl.weights 
+
+   # lr = LogisticRegression()
+   # lr.learn_boundary(pickled_training_file)
+   # util.evaluate(pickled_testing_file, lr.predict) 
+   # print lr.weights 
+   # print lr.predictDiseased 
 
 
 if __name__ == '__main__':

@@ -49,7 +49,7 @@ for (file, result) in files:
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
 		
-		for featureFunc in BaseLineFeaturesStripped: #BaselineFeatures
+		for featureFunc in BaseLineFeatures: #BaselineFeatures
 			feature = featureFunc(lineList)
 			if feature:
 				(key, value) = feature

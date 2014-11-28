@@ -6,7 +6,8 @@ import random
 """
 This converts overlap results to easy to searh python objects
 """
-overlapSelectPath = "../../../tools/overlapSelect"
+#overlapSelectPath = "../../../tools/overlapSelect"
+overlapSelectPath = "overlapSelect"
 
 # Two input files, diseased or healthy in .bed format
 input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
