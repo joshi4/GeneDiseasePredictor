@@ -71,15 +71,38 @@ def svType(bedLine):
 	svType = info[0].lower()
 	return (svType, 1)
 
-
 diseasedOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/diseased.p' ,'rb'))
 healthyOverlapWithExons = pickle.load(open('../overlapBEDFiles/knownGenesCodingExons/healthy.p' ,'rb'))
-def overlapWithCodingExonsFastest(bedLine):
+def overlapWithCodingExons(bedLine):
 	info = bedLine[3].split(";")
 	uniqeId = info[1]
 	numOverlaps = diseasedOverlapWithExons[uniqeId]
 	numOverlaps += healthyOverlapWithExons[uniqeId]
 	if numOverlaps > 0:
 		return ("overlapsWithCodingExons", numOverlaps)
+	else:
+		return False
+
+diseasedOverlapWithRegulatoryVistaEnhancers = pickle.load(open('../overlapBEDFiles/RegulatoryVistaEnhancers/diseased.p' ,'rb'))
+healthyOverlapWithRegulatoryVistaEnhancers = pickle.load(open('../overlapBEDFiles/RegulatoryVistaEnhancers/healthy.p' ,'rb'))
+def overlapWithVistaEnhancer(bedLine):
+	info = bedLine[3].split(";")
+	uniqeId = info[1]
+	numOverlaps = diseasedOverlapWithRegulatoryVistaEnhancers[uniqeId]
+	numOverlaps += healthyOverlapWithRegulatoryVistaEnhancers[uniqeId]
+	if numOverlaps > 0:
+		return ("overlapWithVistaEnhancer", numOverlaps)
+	else:
+		return False
+
+diseasedOverlapWithRegulatoryBroadEnhancers = pickle.load(open('../overlapBEDFiles/RegulatoryBroadEnhancers/diseased.p' ,'rb'))
+healthyOverlapWithRegulatoryBroadEnhancers = pickle.load(open('../overlapBEDFiles/RegulatoryBroadEnhancers/healthy.p' ,'rb'))
+def overlapWithBroadEnhancer(bedLine):
+	info = bedLine[3].split(";")
+	uniqeId = info[1]
+	numOverlaps = diseasedOverlapWithRegulatoryBroadEnhancers[uniqeId]
+	numOverlaps += healthyOverlapWithRegulatoryBroadEnhancers[uniqeId]
+	if numOverlaps > 0:
+		return ("overlapWithBroadEnhancer", numOverlaps)
 	else:
 		return False

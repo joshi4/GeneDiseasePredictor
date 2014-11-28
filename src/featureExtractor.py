@@ -25,7 +25,7 @@ files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.startPosition, features.endPosition]
-BaseLineFeatures = [features.overlapWithCodingExonsFastest, features.chromosome, features.cnvLength, features.svType]
+BaseLineFeatures = [features.overlapWithBroadEnhancer, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
 
 dataTesting = []
 dataTraining = []
