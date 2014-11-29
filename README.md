@@ -30,6 +30,13 @@ Similar to Info in .vcf i think there's a field in bed to which we can tack on r
 * confirm the meaning of same chrom,start,end but different nssv id ? 
 * Ask Sandeep about overlap with coding exons right now we can say it overlapped with A coding exon, but we want to know which ones as well? 
 
+### Notes for the Report
+
+Experiment/Stats
+
+* Takes 2seconds per test example in a naive implementation of k_nn 
+* would take 2 hours just to run through the test examples
+* Hence we use the ball tree
 
 ### Notes
 
