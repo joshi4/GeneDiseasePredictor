@@ -12,6 +12,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import GaussianNB
+import seaborn as sns
+import pandas as pd
 
 chrToFloat = {}
 floatToChr = {}
@@ -103,6 +105,7 @@ def append_features_and_target_baseline(filename, X, y, score, skip):
       addMinChrom(row[0], start)
       addMaxChrom(row[0], end)
       X.append([mkChrToFloat(row[0]), float(row[1]) / 100000.0, float(row[2]) / 100000.0, mkCnvTypeToFloat(cnvType)])
+      # X.append([mkChrToFloat(row[0]), randrange(2000), randrange(2000), mkCnvTypeToFloat(cnvType)])
       y.append(score)
 
 def append_features_and_target_vista(filename, X, y, score, skip):
@@ -148,15 +151,16 @@ def load_features_and_target(baseline, skipDiseased, skipHealthy):
 def runBase(classifier='svc', kernel='linear', skip=1, diseaseFactor=1.0):
   print '======= BASE LINE ======='
   X, y, numDiseased, numHealthy = load_features_and_target(True, max(int(skip / diseaseFactor), 1), skip)
-  return run(X, y, numDiseased, numHealthy, kernel, classifier)
+  X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=.25)
+  return X, y, run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier)
 
 def runClass(classifier='svc', kernel='linear', skip=1, diseaseFactor=1.0):
   print '===== ALL  FEATURES ====='
   X, y, numDiseased, numHealthy = load_features_and_target(False, max(int(skip / diseaseFactor), 1), skip)
-  return run(X, y, numDiseased, numHealthy, kernel, classifier)
-
-def run(X, y, numDiseased, numHealthy, kernel, classifier):
   X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=.25)
+  return X, y, run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier)
+
+def run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier):
   assert (len([i for i in y_test if i > 0]) > 0)
   print('Loaded features; starting classification')
   print('Number of diseased samples: ' + str(numDiseased))
@@ -167,7 +171,7 @@ def run(X, y, numDiseased, numHealthy, kernel, classifier):
   if classifier == 'svc':
     method = svm.SVC(kernel=kernel, degree=2, class_weight={-1:1, 1:diseasedWeight})
   elif classifier == 'knn':
-    method = KNeighborsClassifier()
+    method = KNeighborsClassifier(n_neighbors=3)
   elif classifier == 'rf':
     method = RandomForestClassifier(n_estimators=10, max_depth=None, min_samples_split=1)
   elif classifier == 'lr':
@@ -175,27 +179,39 @@ def run(X, y, numDiseased, numHealthy, kernel, classifier):
   wclf = method.fit(X_train, y_train)
   y_pred = wclf.predict(X_test)
   print('classification completed; starting validation')
-  accuracy = accuracy_score(y_test, y_pred)
-  print 'Accuracy: ' + str(accuracy * 100) + '%'
   precision = precision_score(y_test, y_pred)
   print 'Precision (prob. of diagnosis being true): ' + str(precision * 100) + '%'
   recall = recall_score(y_test, y_pred)
   print 'Recall (percentage of correctly diagnosed out of all cases): ' + str(recall * 100) + '%'
-  return X, y, wclf
+  return wclf
 
 def plot(X, idx1, idx2):
   xLim1 = min(X[:, idx1])
   yLim1 = min(X[:, idx2])
   xLim2 = max(X[:, idx1])
   yLim2 = max(X[:, idx2])
-  xx = np.linspace(xLim1, xLim2)
 
-  plt.autoscale(enable=False)
+  plt.autoscale(enable=True)
   plt.xlim(xLim1, xLim2)
   plt.ylim(yLim1, yLim2)
   plt.scatter(X[:, idx1], X[:, idx2], c=y, cmap=plt.cm.Paired)
   plt.legend()
 
+  plt.show()
+
+def myPlotViolin(X, y):
+  plotViolin(X, y, ['chr', 'start', 'end', 'cnvType'], 'chr', 'start')
+
+def plotViolin(X, y, columnNames, xColumn, yColumn):
+  X_healthy = X[y == -1]
+  X_diseased = X[y == 1]
+  dfX_healthy = pd.DataFrame(X_healthy)
+  dfX_healthy.columns = columnNames
+  dfX_diseased = pd.DataFrame(X_diseased)
+  dfX_diseased.columns = columnNames
+  f, (ax_upper, ax_lower) = plt.subplots(2, 1)
+  sns.violinplot(dfX_healthy[yColumn], dfX_healthy[xColumn], inner='None', ax=ax_upper, bw=.001)
+  sns.violinplot(dfX_diseased[yColumn], dfX_diseased[xColumn], inner='None', ax=ax_lower, bw=.001)
   plt.show()
 
 def plotLSVC(X, y, wclf, idx1, idx2):
@@ -221,7 +237,7 @@ def plotLSVC(X, y, wclf, idx1, idx2):
 
 def findKnnRegions():
   X, y, wclf = runBase('knn')
-  step = 25000
+  step = 5000 
   last = False
   regionStart = 0
   regionEnd = 0
