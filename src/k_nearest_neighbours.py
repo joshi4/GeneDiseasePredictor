@@ -1,4 +1,3 @@
-from Kdistance import Kdistance 
 import util
 import pickle
 import BallTree
@@ -12,10 +11,13 @@ class NearestNeighbors():
         self.N = n 
         self.training_data = pickle.load(open(training_file, "rb"))
         print "finished loading the training dataset"
-        self.ball_tree = BallTree()
+        self.ball_tree = BallTree.BallTree()
         print "creating the ball tree"
-        self.ball_tree_root = self.ball_tree(self.training_data,set())
+        self.ball_tree_root = self.ball_tree.construct_balltree(self.training_data,set())
         print "finished creating the ball tree"
+        print "diseased pivots = ", self.ball_tree.diseased_pivot 
+        print "healthy pivots = ", self.ball_tree.healthy_pivot 
+        
 
     #def nearest_neighbor(self,v):
     #    """
@@ -44,7 +46,7 @@ class NearestNeighbors():
                diseased_counter += 1
            else:
                diseased_counter -= 1
-        if diseased_counter > 0:
+        if diseased_counter >= 0:
             return 1
         return -1 
 
@@ -94,6 +96,5 @@ class NearestNeighbors():
 #        print "label = %d and result = %d" %(label,result)
 #        break 
 
-nn = NearestNeighbors(3,"trainingSet.p")
+nn = NearestNeighbors(5,"trainingSet.p")
 util.evaluate("testingSet.p", nn.predict)
-

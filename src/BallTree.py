@@ -1,7 +1,7 @@
 import collections
 import MaxHeap
 import pickle 
-import Kdistance
+from Kdistance import Kdistance
 class BallTreeNode():
     def __init__(self,data):
         self.data = data # list of tuple of the form [( feature, label)]
@@ -9,6 +9,11 @@ class BallTreeNode():
         self.left = None
 
 class BallTree(Kdistance):
+    def __init__(self):
+        self.diseased_pivot = 0 
+        self.healthy_pivot = 0
+        #super().__init__()
+
     def construct_balltree(self,data,used_keys):
         """
         @params: [(feature,label)] where feature is some k dimensional vector
@@ -43,7 +48,11 @@ class BallTree(Kdistance):
         for feature,label in data:
             if most_common_key in feature:
                 if pivot == None:
-                    pivot = (feature,label)
+                    pivot = [(feature,label)]
+                    if label == 1:
+                        self.diseased_pivot += 1
+                    else:
+                        self.healthy_pivot += 1
                 else:
                     right.append((feature,label))
             else:
@@ -66,43 +75,68 @@ class BallTree(Kdistance):
         @param: |k| is the number of nearest neighbours
         @param: |target_vector| number of 
         @param: |root| is the starting point of our search in the ball tree 
-        @return: |Q| a priority queue of size |k| which has the k nearest neighbours 
+        @return: |neighbours| a priority queue of size |k| which has the k nearest neighbours 
                 of |target_vector|
         """
-        neighbours = MaxHeap(k)
+        neighbours = MaxHeap.MaxHeap(k)
         def recurse(k, target_vector, root, neighbours):
             if root != None:
                 root_feature_vector = root.data[0][0]
+                #print "root_feature_vector = ", root_feature_vector
+                #print "root_feature = ", root.data[0]
+                #print "all elements in the root = ", root.data 
                 max_feature_vector = neighbours.peek_max_ele()[1][0]
-                if self.computeDistance(root_feature_vector,target_vector) >= 
-                    self.computeDistance( root_feature_vector, max_feature_vector):
-                            return 
-            elif root.left == None and root.right == None: #if its a leaf node then ... 
-                for point in root.data:
-                    point_v = point[0]
-                    q_first = neighbours.peek_max_ele()[1][0]
-                    candidate_distance = self.computeDistance(target_vector,point_v) 
-                    heap_distance = self.computeDistance( target_vector,q_first)
-                    if  candidate_distance  < heap_distance:
-                        neighbours.insert_ele((candidate_distance, point))
-            else:
-                #figure out the closest child node, explore that first. 
-                left_child = root.left 
-                right_child = root.right 
-                left_feature_vector = left_child[0][0]
-                right_feature_vector = right_child[0][0]
-                right_distance = self.computeDistance(target_vector, right_feature_vector)
-                left_distance = self.computeDistance(target_vector, left_feature_vector)
-                if right_distance < left_feature_vector:
-                    recurse(k,target_vector,right_child,neighbours)
-                    recurse(k,target_vector,left_child,neighbours)
+                #print "max_feature_vector = ", max_feature_vector 
+                #print "target_vector = ", target_vector 
+                if self.computeDistance(root_feature_vector,target_vector) > self.computeDistance( target_vector, max_feature_vector):
+                    #print "candidate distance = ", self.computeDistance(root_feature_vector,target_vector) 
+                    #print "max heap distance = ", self.computeDistance( target_vector, max_feature_vector)
+                    #print "======== terminating early ==== "
+                    return 
+                elif root.left == None and root.right == None: #if its a leaf node then ... 
+                    for point in root.data:
+                        point_v = point[0]
+                        q_first = neighbours.peek_max_ele()[1][0]
+                        candidate_distance = self.computeDistance(target_vector,point_v) 
+                        #if point[1] == 1.0:
+                        #    candidate_distance /= 10.0
+                        heap_distance = self.computeDistance( target_vector,q_first)
+                        if  candidate_distance  < heap_distance:
+                            neighbours.insert_ele((candidate_distance, point))
                 else:
-                    recurse(k,target_vector,left_child,neighbours)
-                    recurse(k,target_vector,right_child,neighbours)
-        recurse(k,target_vector,root_feature_vector, neighbours)
+                    #figure out the closest child node, explore that first. 
+                    left_child = root.left 
+                    right_child = root.right 
+                    left_feature_vector = None
+                    right_feature_vector = None
+                    left_label = None
+                    right_label = None
+                    if left_child != None: 
+                        left_feature_vector = left_child.data[0][0]
+                        left_label = left_child.data[0][1]
+                    if right_child != None:
+                        right_feature_vector = right_child.data[0][0]
+                        right_label = right_child.data[0][1]
+
+                    right_distance = self.computeDistance(target_vector, right_feature_vector)
+                    left_distance = self.computeDistance(target_vector, left_feature_vector)
+                    #if right_label == 1:
+                    #    right_distance /= 10.0 
+                    #    #print "shortening distnce"
+                    #if left_label == 1:
+                    #    left_distance /= 10.0
+                        #print "shortening distance"
+                    if right_distance < left_distance:
+                        recurse(k,target_vector,right_child,neighbours)
+                        recurse(k,target_vector,left_child,neighbours)
+                    else:
+                        recurse(k,target_vector,left_child,neighbours)
+                        recurse(k,target_vector,right_child,neighbours)
+
+        recurse(k,target_vector,root, neighbours)
         return neighbours.heap
 
 
 
-btree = BallTree()
-btree.test_tree_creation()
+#btree = BallTree()
+#btree.test_tree_creation()
