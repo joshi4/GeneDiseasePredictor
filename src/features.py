@@ -93,7 +93,7 @@ def logLength(bedLine):
 	start = int(bedLine[1])
 	end = int(bedLine[2])
 	length = end - start
-	logLength = math.log(10, length)
+	logLength = math.log(length, 10)
 	return ("logLength", logLength)	
 
 # TODO, need to calculate better thresholds for length, use histogram to equally seperate them?
@@ -201,8 +201,8 @@ def overlapWithMicroSats(bedLine):
 	else:
 		return False
 
-diseasedOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/diseased.p' ,'rb'))
-healthyOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/healthy.p' ,'rb'))
+#iseasedOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/diseased.p' ,'rb'))
+#healthyOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/healthy.p' ,'rb'))
 def overlapWithKnownRepeats(bedLine):
 	"""
 	How many times the CNV overlaps with a known repeat Sequence

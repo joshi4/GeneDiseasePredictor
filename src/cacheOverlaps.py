@@ -38,5 +38,5 @@ for folder in folders:
 		# Save pickle file for later use
 		outputPickleFile = "%s/%s.p" % (path, outputFile)
 		pickle.dump(data, open(outputPickleFile, "wb" ))
-		# Remove .bed file
+		# Remove temp .bed file
 		os.system('rm %s' % (output))
