@@ -20,7 +20,7 @@ folders = ["knownGenesCodingExons", "RegulatoryBroadEnhancers", "RegulatoryVista
 for folder in folders:
 	path = "../overlapBEDFiles/%s" % folder
 	fileToOverlapWith = "%s/baseToOverlapWith.bed" % path
-	for (inputFile, outputFile) in inoutFile
+	for (inputFile, outputFile) in inoutFiles:
 		# Run the overlapSelect to get the overlap files
 		output = "%s/%s.bed" % (path, outputFile)
 		try:
@@ -38,3 +38,5 @@ for folder in folders:
 		# Save pickle file for later use
 		outputPickleFile = "%s/%s.p" % (path, outputFile)
 		pickle.dump(data, open(outputPickleFile, "wb" ))
+		# Remove .bed file
+		os.system('rm %s' % (output))
