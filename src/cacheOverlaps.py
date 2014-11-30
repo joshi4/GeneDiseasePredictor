@@ -16,7 +16,7 @@ input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 inoutFiles = [(input_diseased_bed_file, "diseased"),(input_healthy_bed_file, "healthy")]
 
 # All the foldernames that have overlap .bed files
-folders = ["knownGenesCodingExons", "RegulatoryBroadEnhancers", "RegulatoryVistaEnhancers", "KnownGenes", "Microsatellites", "KnownRepeats"]
+folders = ["knownGenesCodingExons", "RegulatoryBroadEnhancers", "RegulatoryVistaEnhancers", "KnownGenes", "Microsatellites"]
 for folder in folders:
 	path = "../overlapBEDFiles/%s" % folder
 	fileToOverlapWith = "%s/baseToOverlapWith.bed" % path

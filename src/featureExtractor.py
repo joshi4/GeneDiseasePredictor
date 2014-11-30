@@ -25,7 +25,7 @@ files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 # A list of feature extracting functions (one for each feature). 
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
-listOfFeatures = [features.absoluteStartPosition, features.overlapWithKnownRepeats, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+listOfFeatures = [features.absoluteStartPosition, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
 
 # To save the results (sparse representation of features)
 dataTesting = []
