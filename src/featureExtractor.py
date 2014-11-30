@@ -25,7 +25,7 @@ files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
 listOfFeatures = [features.chromosome, features.cnvLength, features.svType, features.startPosition, features.endPosition]
-BaseLineFeatures = [features.overlapWithBroadEnhancer, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+BaseLineFeatures = [features.absoluteStartPosition, features.overlapWithKnownRepeats, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
 
 dataTesting = []
 dataTraining = []
@@ -34,16 +34,12 @@ dataTraining = []
 for (file, result) in files:
 	# Each line is a tuple of (features, result) where:
 	#	features is a collection of features (sparse representation)
-	# 	value is 'd' or 'h' (diseased or healthy)
+	# 	value is '1.0' or '-1.0' (diseased or healthy)
 	# The entire feature set is a list of these tuples
 
 	counter = 0
 	fin = open(file, 'r')
 	for line in fin:
-
-		# Temp, TODO, remove this
-		#counter += 1
-		#if counter >=20: break
 
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
@@ -64,5 +60,6 @@ for (file, result) in files:
 #print "Training data: %s " % dataTraining
 #print "Testing data: %s " % dataTesting
 # Save the results to pickle files
-pickle.dump(dataTraining, open("trainingSet.p", "wb" ))	
-pickle.dump(dataTesting, open("testingSet.p", "wb" ))
+pickle.dump(dataTraining, open("trainingSet.p", "wb"))	
+pickle.dump(dataTesting, open("testingSet.p", "wb"))
+
