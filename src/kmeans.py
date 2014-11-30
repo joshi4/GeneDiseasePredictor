@@ -12,12 +12,12 @@ from utils import *
 K-means implementation for CNV classfication. More detailed comments in the kmeans
 and helper functions below. 
 
-Summary: 15 clusters and 25 iterations. Have adjusted for data set proportions
+Summary: 12 clusters and 10 iterations. Have adjusted for data set proportions
 (10% diseased and 90% healthy). Training and testing data is using Justin's first
 feature vector extractor, which contains a mix of indicator variables and large integers. 
 
-Preliminary error rate is 71% and total cost averages to around 260,000. Yikes. 
-I think this can be explined by the wonky feature vector, however. 
+Preliminary error rate is 32% and total cost averages to around 800.
+I think our new feature vector will lower this error rate, however.
 The indicator variables are effectively being ignored, because of the huge numbers in columns 
 such as 'start' or 'end', which give the offset in number of nucleotides
 from the beginning of the chromosome. The distance metric used to calculate nearest cluster
@@ -29,8 +29,8 @@ the results a little!
 
 pickledTrainingFile = "./trainingSet.p"
 pickledTestingFile = "./testingSet.p"
-K_CONST = 15
-MAX_ITERS = 25
+K_CONST = 12
+MAX_ITERS = 10
 
 #calculates magnitude of a feature vector
 def magnitude(dic):
@@ -55,11 +55,11 @@ def scoreVectors(example, center, centerMag):
 		return float('Inf')
 	cosineSimilarity = (dtpdt)/(magA * centerMag)	#from Wikipedia
 	try:
-		result = 1 - 2*(math.acos(cosineSimilarity)/math.pi) # Not sure if we should have the *2 out front or not
+		result = 2*(math.acos(cosineSimilarity)/math.pi) # Not sure if we should have the *2 out front or not
 	except Exception as e:
 		print cosineSimilarity
 		print e
-		return 1 # --> if cosineSimilarity = 1, math.acos is undefined, but the curve approaches 0
+		return 0 # --> if cosineSimilarity = 1, math.acos is undefined, but the curve approaches 0
 	return result
 
 #helper fu nction for kmeans. Selects a random entry from the list of feature
@@ -88,7 +88,7 @@ def findLoss(assignments, examples, centers):
 	for i, example in enumerate(examples):
 		center = centers[assignments[i]]
 		centerMag = magnitude(center)
-		loss += scoreVectors(example[0], center, centerMag)
+		loss += math.pow(scoreVectors(example[0], center, centerMag), 2)
 	return loss
 
 #Finds the closest center to the given example
@@ -155,7 +155,7 @@ def classifyCenters(z, K):
 		#check if there are any assignments to the ith cluster
 		if len(z[i]) == 0:
 			result[i] = 0
-			
+
 		else:
 			for example, label in z[i]:
 				if label == 1:
