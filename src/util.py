@@ -20,13 +20,16 @@ def increment(d1,scale,d2):
 
 def evaluate(pickled_test_file,predictor):
     test_examples = pickle.load(open(pickled_test_file, 'rb'))
+    test_data = test_examples[20000:31001]  + test_examples[1000:3500]
     errors = 0 
     false_positive = 0 
     false_negative = 0 
     true_positive = 0 
     true_negative = 0 
-    N = len(test_examples) 
-    for feature,label in test_examples:
+    #N = len(test_examples) 
+    N = len(test_data) 
+    for feature,label in test_data:
+        #print "test feature vector is ", feature
         result = predictor(feature)
         if result != label:
             errors += 1

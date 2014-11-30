@@ -1,4 +1,5 @@
 import collections
+from random import randint,shuffle
 import MaxHeap
 import pickle 
 from Kdistance import Kdistance
@@ -44,19 +45,24 @@ class BallTree(Kdistance):
 
         right = [] #right is all those data points where most_common_key = 1
         left = [] #left is all those data points where most_common_key = 0 
-        pivot = None
         for feature,label in data:
             if most_common_key in feature:
-                if pivot == None:
-                    pivot = [(feature,label)]
-                    if label == 1:
-                        self.diseased_pivot += 1
-                    else:
-                        self.healthy_pivot += 1
-                else:
-                    right.append((feature,label))
+                #if pivot == None:
+                #    pivot = [(feature,label)]
+                #    if label == 1:
+                #        self.diseased_pivot += 1
+                #    else:
+                #        self.healthy_pivot += 1
+                #else:
+                right.append((feature,label))
             else:
                 left.append((feature,label))
+        pivot_index = randint(0,len(right)-1)
+        pivot = [right.pop(pivot_index)]
+        if pivot[0][1] == 1:
+            self.diseased_pivot += 1
+        else:
+            self.healthy_pivot += 1 
         node = BallTreeNode(pivot)
         updated_used_keys = set(used_keys)
         updated_used_keys.add(most_common_key)
@@ -88,21 +94,30 @@ class BallTree(Kdistance):
                 max_feature_vector = neighbours.peek_max_ele()[1][0]
                 #print "max_feature_vector = ", max_feature_vector 
                 #print "target_vector = ", target_vector 
-                if self.computeDistance(root_feature_vector,target_vector) > self.computeDistance( target_vector, max_feature_vector):
+                if self.computeDistance(root_feature_vector,target_vector) >=  self.computeDistance( target_vector, max_feature_vector):
                     #print "candidate distance = ", self.computeDistance(root_feature_vector,target_vector) 
                     #print "max heap distance = ", self.computeDistance( target_vector, max_feature_vector)
                     #print "======== terminating early ==== "
                     return 
                 elif root.left == None and root.right == None: #if its a leaf node then ... 
+                    already_seen = []
+                    already_seen_distance = set()
+                    shuffle(root.data)
                     for point in root.data:
                         point_v = point[0]
+                        if point_v in already_seen:
+                            continue
                         q_first = neighbours.peek_max_ele()[1][0]
                         candidate_distance = self.computeDistance(target_vector,point_v) 
+                        if candidate_distance in already_seen_distance:
+                            continue
                         #if point[1] == 1.0:
                         #    candidate_distance /= 10.0
                         heap_distance = self.computeDistance( target_vector,q_first)
-                        if  candidate_distance  < heap_distance:
+                        if  candidate_distance < heap_distance:
                             neighbours.insert_ele((candidate_distance, point))
+                            already_seen.append(point_v)
+                            already_seen_distance.add(candidate_distance)
                 else:
                     #figure out the closest child node, explore that first. 
                     left_child = root.left 
@@ -127,9 +142,11 @@ class BallTree(Kdistance):
                     #    left_distance /= 10.0
                         #print "shortening distance"
                     if right_distance < left_distance:
+                        #print "right_distance is ", right_distance 
                         recurse(k,target_vector,right_child,neighbours)
                         recurse(k,target_vector,left_child,neighbours)
                     else:
+                        #print "left_distance is ", left_distance 
                         recurse(k,target_vector,left_child,neighbours)
                         recurse(k,target_vector,right_child,neighbours)
 

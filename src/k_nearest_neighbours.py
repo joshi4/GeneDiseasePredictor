@@ -39,6 +39,7 @@ class NearestNeighbors():
     def predict(self,v):
         k_nn = self.ball_tree.nearest_neighbors(self.N, v, self.ball_tree_root)
         #k_nn is a list of the form [(distance, (feature, label))]
+        #print k_nn 
         diseased_counter = 0 
         for ele in k_nn:
            _,label = ele[1] 
@@ -46,7 +47,7 @@ class NearestNeighbors():
                diseased_counter += 1
            else:
                diseased_counter -= 1
-        if diseased_counter >= 0:
+        if diseased_counter > 0:
             return 1
         return -1 
 
