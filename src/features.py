@@ -73,7 +73,7 @@ def absoluteStartPosition(bedLine):
 	totalStartPos = 0
 	for (index, value) in enumerate(chromSizes):
 		if(index == chrom): break
-		else: totalStartPos += value 
+		else: totalStartPos += int(value) 
 	totalStartPos += start
 	return ("startAbsolute", totalStartPos)
 
