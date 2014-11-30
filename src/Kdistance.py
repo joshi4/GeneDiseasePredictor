@@ -24,7 +24,10 @@ class Kdistance():
         """
         @params two vectors |a| and |b| 
         returns the angle between the two. 
+        special case: returns +Inf if one of the vectors is None
         """
+        if a == None or b == None:
+            return float('Inf')
         dot_product = self.dotProduct(a,b)
         magnitude_a = self.magnitude(a)
         magnitude_b = self.magnitude(b)
