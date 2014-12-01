@@ -60,6 +60,7 @@ class HingeLossClassifier():
        """
 
        training_examples = pickle.load(open(pickled_training_file ,'rb'))
+       shuffle(training_examples)
        for i in xrange(self.numIters):
            print "iteration number = " , i 
            for feature,label in training_examples:
