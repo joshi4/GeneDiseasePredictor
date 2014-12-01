@@ -13,8 +13,8 @@ return:
 	a (key, value) tuple where key is the feature's key and value is the features value (the value is simply 1 for indicator variables)
 """
 
-#overlapSelectPath = "../../../tools/overlapSelect"
-overlapSelectPath = "overlapSelect"
+overlapSelectPath = "../../../tools/overlapSelect"
+#overlapSelectPath = "overlapSelect" (use this if you have overlapSelect in your $PATH) 
 
 def startPosition(bedLine):
 	"""
