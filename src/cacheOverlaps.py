@@ -88,4 +88,5 @@ def cacheKnownGeneIndicatorsPerGene():
 	os.system('rm %s' % (newTempFile))
 
 if __name__ == "__main__":
+	cacheGeneralIndicatorOverlaps()
 	cacheKnownGeneIndicatorsPerGene()

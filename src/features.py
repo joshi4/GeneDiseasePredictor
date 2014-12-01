@@ -208,8 +208,12 @@ def overlapWithKnownGenesIndicatorPerGene(bedLine):
 	"""
 	info = bedLine[3].split(";")
 	uniqeId = info[1]
-	diseasedSet = diseasedOverlapWithKnownGenesPerGene[uniqeId]
-	healthySet = healthyOverlapWithKnownGenesPerGene[uniqeId]
+	diseasedSet = Set([])
+	if uniqeId in diseasedOverlapWithKnownGenesPerGene:
+		diseasedSet = diseasedOverlapWithKnownGenesPerGene[uniqeId]
+	healthySet = Set([])
+	if uniqeId in healthyOverlapWithKnownGenesPerGene:
+		healthySet = healthyOverlapWithKnownGenesPerGene[uniqeId]
 	combinedSet = healthySet | diseasedSet
 	finalList = []
 	for gene in combinedSet:
