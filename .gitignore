@@ -1,3 +1,8 @@
 *~
 *.swp
 *.pyc
+*.p
+src/violinTesting.bed
+src/violinTraining.bed
+!overlapBEDFiles/
+!overlapBEDFiles/**/*.p

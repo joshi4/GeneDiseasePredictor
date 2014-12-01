@@ -4,18 +4,19 @@ import pickle
 import random
 
 """
-This converts overlap results to easy to searh python objects
+This converts overlap results to easy to searh python objects before running the feature extraction step (featureExtractor.py)
+
+
 """
-#overlapSelectPath = "../../../tools/overlapSelect"
-overlapSelectPath = "overlapSelect"
+overlapSelectPath = "../../../tools/overlapSelect"
 
 # Two input files, diseased or healthy in .bed format
 input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
 input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
-inoutFiles = [(input_diseased_bed_file,"diseased"),(input_healthy_bed_file,"healthy")]
+inoutFiles = [(input_diseased_bed_file, "diseased"),(input_healthy_bed_file, "healthy")]
 
 # All the foldernames that have overlap .bed files
-folders = ["knownGenesCodingExons"]
+folders = ["knownGenesCodingExons", "RegulatoryBroadEnhancers", "RegulatoryVistaEnhancers", "KnownGenes", "Microsatellites"]
 for folder in folders:
 	path = "../overlapBEDFiles/%s" % folder
 	fileToOverlapWith = "%s/baseToOverlapWith.bed" % path
@@ -37,3 +38,5 @@ for folder in folders:
 		# Save pickle file for later use
 		outputPickleFile = "%s/%s.p" % (path, outputFile)
 		pickle.dump(data, open(outputPickleFile, "wb" ))
+		# Remove temp .bed file
+		os.system('rm %s' % (output))

@@ -12,6 +12,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import GaussianNB
+import seaborn as sns
+import pandas as pd
 
 chrToFloat = {}
 floatToChr = {}
@@ -46,30 +48,49 @@ def overlaps(a, b):
     return True
   return False
 
-def overlapWithVistaEnhancers(chrom, start, end):
-  numEnhancers = 0
-  enhancerTypes = []
-  with open('../overlapBEDFiles/regulatory/VistaEnhancers/vistaEnhancers.bed') as f:
+def overlapWithVistaEnhancers():
+  ret = {}
+  with open('../overlapBEDFiles/regulatory/VistaEnhancers/nstd100XvistaEnhancers.bed') as f:
     reader = csv.reader(f, delimiter='\t')
     for row in reader:
-      if overlaps([chrom, start, end], [row[0], int(row[1]), int(row[2])]):
-        numEnhancers += 1
-        enhancerTypes.append(row[3])
-  return numEnhancers, enhancerScore
+      chrom = row[0]
+      start = int(row[1])
+      end = int(row[2])
+      score = int(row[8])
+      if (chrom, start, end) in ret:
+        (numEnhancers, oldScore) = ret[(chrom, start, end)]
+        ret[(chrom, start, end)] = (numEnhancers + 1, oldScore + score / 100)
+      else:
+        ret[(chrom, start, end)] = (1, score / 100)
+  return ret
 
-def overlapWithBroadEnhancers(chrom, start, end):
-  numEnhancers = 0
-  enhancerScore = 0
-  with open('../overlapBEDFiles/regulatory/BroadEnhancers/gm12878ChromHmm.bed') as f:
-    reader = csv.reader(f, delimiter='\t')
-    for row in reader:
-      if overlaps([chrom, start, end], [row[0], int(row[1]), int(row[2])]):
-        numEnhancers += 1
-        enhancerScore += float(row[4]) / 100.0
-  return numEnhancers, enhancerScore
+vistaEnhancersDict = overlapWithVistaEnhancers()
 
-def enhancers(chrName, start, end):
-  return overlapWithEnhancers(chrName, start, end)
+def vistaEnhancers(chrName, start, end):
+  if (chrName, start, end) in vistaEnhancersDict:
+    (numEnhancers, score) = vistaEnhancersDict[(chrName, start, end)]
+    return numEnhancers, score
+  return 0, 0
+
+enhancerTypesToFloat = {}
+floatToEnhancerTypes = {}
+
+minChrom = {}
+maxChrom = {}
+
+def addMinChrom(chrom, pos):
+  if chrom in minChrom:
+    if pos < minChrom[chrom]:
+      minChrom[chrom] = pos
+  else:
+    minChrom[chrom] = pos
+
+def addMaxChrom(chrom, pos):
+  if chrom in maxChrom:
+    if pos > maxChrom[chrom]:
+      maxChrom[chrom] = pos
+  else:
+    maxChrom[chrom] = pos
 
 def append_features_and_target_baseline(filename, X, y, score, skip):
   with open(filename) as f:
@@ -79,10 +100,15 @@ def append_features_and_target_baseline(filename, X, y, score, skip):
         continue
       typeWithAnnotation = row[3]
       cnvType = row[3].split(';')[0]
-      X.append([mkChrToFloat(row[0]), np.log10(float(row[1])), np.log10(float(row[2])), mkCnvTypeToFloat(cnvType)])
+      start = int(row[1])
+      end = int(row[2])
+      addMinChrom(row[0], start)
+      addMaxChrom(row[0], end)
+      X.append([mkChrToFloat(row[0]), float(row[1]) / 100000.0, float(row[2]) / 100000.0, mkCnvTypeToFloat(cnvType)])
+      # X.append([mkChrToFloat(row[0]), randrange(2000), randrange(2000), mkCnvTypeToFloat(cnvType)])
       y.append(score)
 
-def append_features_and_target(filename, X, y, score, skip):
+def append_features_and_target_vista(filename, X, y, score, skip):
   with open(filename) as f:
     reader = csv.reader(f, delimiter='\t')
     for row in reader:
@@ -90,22 +116,26 @@ def append_features_and_target(filename, X, y, score, skip):
         continue
       typeWithAnnotation = row[3]
       cnvType = row[3].split(';')[0]
-      numEnhancers, enhancerScore = enhancers(row[0], int(row[1]), int(row[2]))
-      X.append([mkChrToFloat(row[0]), np.log(float((int(row[2]) - int(row[1])))), mkCnvTypeToFloat(cnvType), numEnhancers, enhancerScore])
+      start = int(row[1])
+      end = int(row[2])
+      addMinChrom(row[0], start)
+      addMaxChrom(row[0], end)
+      numEnhancers, enhancerScore = vistaEnhancers(row[0], int(row[1]), int(row[2]))
+      X.append([mkChrToFloat(row[0]), float(row[1]) / 100000.0, float(row[2]) / 100000.0, np.log10(float((int(row[2]) - int(row[1])))), mkCnvTypeToFloat(cnvType), numEnhancers, enhancerScore])
       y.append(score)
-     
+
 def load_features_and_target(baseline, skipDiseased, skipHealthy):
   X = []
   y = []
   if baseline:
     append_features_and_target_baseline('../dbVarData/nstd100.diseased.vcf.bed', X, y, 1.0, skipDiseased)
   else:
-    append_features_and_target('../dbVarData/nstd100.diseased.vcf.bed', X, y, 1.0, skipDiseased)
+    append_features_and_target_vista('../dbVarData/nstd100.diseased.vcf.bed', X, y, 1.0, skipDiseased)
   numDiseased = len(X)
   if baseline:
     append_features_and_target_baseline('../dbVarData/nstd100.healthy.vcf.bed', X, y, -1.0, skipHealthy)
   else:
-    append_features_and_target('../dbVarData/nstd100.healthy.vcf.bed', X, y, -1.0, skipHealthy)
+    append_features_and_target_vista('../dbVarData/nstd100.healthy.vcf.bed', X, y, -1.0, skipHealthy)
   numHealthy = len(X) - numDiseased
   X_shuf = []
   y_shuf = []
@@ -118,18 +148,19 @@ def load_features_and_target(baseline, skipDiseased, skipHealthy):
 
 # kernels: e.g. linear, rbf, poly
 # classifiers: svc, knn (k nearest neighbors), rf (random forest), lr (logistic regression)
-def runBase(classifier='svc', kernel='linear', skip=25, diseaseFactor=1.0):
+def runBase(classifier='svc', kernel='linear', skip=1, diseaseFactor=1.0):
   print '======= BASE LINE ======='
   X, y, numDiseased, numHealthy = load_features_and_target(True, max(int(skip / diseaseFactor), 1), skip)
-  return run(X, y, numDiseased, numHealthy, kernel, classifier)
-
-def runClass(classifier='svc', kernel='linear', skip=25, diseaseFactor=1.0):
-  print '===== SOPHISTICATED ====='
-  X, y, numDiseased, numHealthy = load_features_and_target(False, max(int(skip / diseaseFactor), 1), skip)
-  return run(X, y, numDiseased, numHealthy, kernel, classifier)
-
-def run(X, y, numDiseased, numHealthy, kernel, classifier):
   X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=.25)
+  return X, y, run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier)
+
+def runClass(classifier='svc', kernel='linear', skip=1, diseaseFactor=1.0):
+  print '===== ALL  FEATURES ====='
+  X, y, numDiseased, numHealthy = load_features_and_target(False, max(int(skip / diseaseFactor), 1), skip)
+  X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=.25)
+  return X, y, run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier)
+
+def run(X_train, X_test, y_train, y_test, numDiseased, numHealthy, kernel, classifier):
   assert (len([i for i in y_test if i > 0]) > 0)
   print('Loaded features; starting classification')
   print('Number of diseased samples: ' + str(numDiseased))
@@ -140,21 +171,48 @@ def run(X, y, numDiseased, numHealthy, kernel, classifier):
   if classifier == 'svc':
     method = svm.SVC(kernel=kernel, degree=2, class_weight={-1:1, 1:diseasedWeight})
   elif classifier == 'knn':
-    method = KNeighborsClassifier()
+    method = KNeighborsClassifier(n_neighbors=3)
   elif classifier == 'rf':
     method = RandomForestClassifier(n_estimators=10, max_depth=None, min_samples_split=1)
   elif classifier == 'lr':
     method = LogisticRegression(class_weight={-1:1, 1:diseasedWeight})
   wclf = method.fit(X_train, y_train)
-  y_score_bin = wclf.predict(X_test)
-  print('classification completed; starting cross validation')
-  accuracy = accuracy_score(y_score_bin, y_test)
-  print 'Accuracy: ' + str(accuracy * 100) + '%'
-  precision = precision_score(y_score_bin, y_test)
+  y_pred = wclf.predict(X_test)
+  print('classification completed; starting validation')
+  precision = precision_score(y_test, y_pred)
   print 'Precision (prob. of diagnosis being true): ' + str(precision * 100) + '%'
-  recall = recall_score(y_score_bin, y_test)
+  recall = recall_score(y_test, y_pred)
   print 'Recall (percentage of correctly diagnosed out of all cases): ' + str(recall * 100) + '%'
-  return X, y, wclf
+  return wclf
+
+def plot(X, idx1, idx2):
+  xLim1 = min(X[:, idx1])
+  yLim1 = min(X[:, idx2])
+  xLim2 = max(X[:, idx1])
+  yLim2 = max(X[:, idx2])
+
+  plt.autoscale(enable=True)
+  plt.xlim(xLim1, xLim2)
+  plt.ylim(yLim1, yLim2)
+  plt.scatter(X[:, idx1], X[:, idx2], c=y, cmap=plt.cm.Paired)
+  plt.legend()
+
+  plt.show()
+
+def myPlotViolin(X, y):
+  plotViolin(X, y, ['chr', 'start', 'end', 'cnvType'], 'chr', 'start')
+
+def plotViolin(X, y, columnNames, xColumn, yColumn):
+  X_healthy = X[y == -1]
+  X_diseased = X[y == 1]
+  dfX_healthy = pd.DataFrame(X_healthy)
+  dfX_healthy.columns = columnNames
+  dfX_diseased = pd.DataFrame(X_diseased)
+  dfX_diseased.columns = columnNames
+  f, (ax_upper, ax_lower) = plt.subplots(2, 1)
+  sns.violinplot(dfX_healthy[yColumn], dfX_healthy[xColumn], inner='None', ax=ax_upper, bw=.001)
+  sns.violinplot(dfX_diseased[yColumn], dfX_diseased[xColumn], inner='None', ax=ax_lower, bw=.001)
+  plt.show()
 
 def plotLSVC(X, y, wclf, idx1, idx2):
   w = wclf.coef_[0]
@@ -177,6 +235,37 @@ def plotLSVC(X, y, wclf, idx1, idx2):
 
   plt.show()
 
+def findKnnRegions():
+  X, y, wclf = runBase('knn')
+  step = 5000 
+  last = False
+  regionStart = 0
+  regionEnd = 0
+  regions = []
+  for chrom in minChrom:
+    for i in xrange(minChrom[chrom], maxChrom[chrom], step):
+      if wclf.predict([chrToFloat[chrom], i / 100000.0, (i + step) / 100000.0, 1.0])[0] == 1:
+        if last:
+          regionEnd = i + step
+        else:
+          last = True
+          regionStart = i
+          regionEnd = i + step
+      else:
+        if last:
+          regions.append([chrom, regionStart, regionEnd])
+          last = False
+  return regions
+
+def printRegions(regions):
+  for t in regions:
+    print t[0] + ':' + str(t[1]) + '-' + str(t[2])
+
+def printRegionsBED(regions, filename):
+  f = open(filename, 'w')
+  for t in regions:
+    f.write(t[0] + '\t' + str(t[1]) + '\t' + str(t[2]) + '\n')
+  f.close()
+
 # if __name__ == "__main__":
-#   print('Hello')
-#   run()
+#   printRegionsBED(findKnnRegions(), 'knnRegions.bed')
