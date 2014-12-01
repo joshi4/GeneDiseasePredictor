@@ -2,6 +2,7 @@ import os
 import collections
 import pickle
 import random
+from sets import Set
 
 overlapSelectPath = "../../../tools/overlapSelect"
 
@@ -74,17 +75,17 @@ def cacheKnownGeneIndicatorsPerGene():
 			while( (len(lineList)-1) > colIndex ):
 				colIndex += 4
 				overlappedGeneName = lineList[colIndex]
-				if unique in data:
-					data[unique].append(overlappedGeneName)
+				if uniqueId in data:
+					data[uniqueId].add(overlappedGeneName)
 				else:
-					data[unique] = [overlappedGeneName]
+					data[uniqueId] = Set([overlappedGeneName])
 
 		# Save pickle file for later use
 		outputPickleFile = "%s/%sMerged.p" % (path, outputFile)
 		pickle.dump(data, open(outputPickleFile, "wb" ))
 		# Remove temp .bed file
-		#os.system('rm %s' % (output))
-		#os.system('rm %s' % (newTempFile))
+		os.system('rm %s' % (output))
+	os.system('rm %s' % (newTempFile))
 
 if __name__ == "__main__":
 	cacheKnownGeneIndicatorsPerGene()

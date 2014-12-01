@@ -1,6 +1,7 @@
 import os
 import pickle
 import math
+from sets import Set
 
 """
 This file has a function for each feature that we want to extract
@@ -150,21 +151,6 @@ def overlapWithBroadEnhancer(bedLine):
 	else:
 		return False
 
-diseasedOverlapWithKnownGenes = pickle.load(open('../overlapBEDFiles/KnownGenes/diseased.p' ,'rb'))
-healthyOverlapWithKnownGenes = pickle.load(open('../overlapBEDFiles/KnownGenes/healthy.p' ,'rb'))
-def overlapWithKnownGenes(bedLine):
-	"""
-	How many times the CNV overlaps with a Known Gene
-	"""
-	info = bedLine[3].split(";")
-	uniqeId = info[1]
-	numOverlaps = diseasedOverlapWithKnownGenes[uniqeId]
-	numOverlaps += healthyOverlapWithKnownGenes[uniqeId]
-	if numOverlaps > 0:
-		return ("overlapWithGene", numOverlaps)
-	else:
-		return False
-
 diseasedOverlapWithMicroSeq = pickle.load(open('../overlapBEDFiles/Microsatellites/diseased.p' ,'rb'))
 healthyOverlapWithMicroSeq = pickle.load(open('../overlapBEDFiles/Microsatellites/healthy.p' ,'rb'))
 def overlapWithMicroSats(bedLine):
@@ -195,5 +181,40 @@ def overlapWithKnownRepeats(bedLine):
 	numOverlaps += healthyOverlapWithKnownRepeats[uniqeId]
 	if numOverlaps > 0:
 		return ("overlapWithKnownRepeatSeq", numOverlaps)
+	else:
+		return False
+
+diseasedOverlapWithKnownGenes = pickle.load(open('../overlapBEDFiles/KnownGenes/diseased.p' ,'rb'))
+healthyOverlapWithKnownGenes = pickle.load(open('../overlapBEDFiles/KnownGenes/healthy.p' ,'rb'))
+def overlapWithKnownGenes(bedLine):
+	"""
+	How many times the CNV overlaps with a Known Gene
+	"""
+	info = bedLine[3].split(";")
+	uniqeId = info[1]
+	numOverlaps = diseasedOverlapWithKnownGenes[uniqeId]
+	numOverlaps += healthyOverlapWithKnownGenes[uniqeId]
+	if numOverlaps > 0:
+		return ("overlapWithGene", numOverlaps)
+	else:
+		return False
+
+diseasedOverlapWithKnownGenesPerGene = pickle.load(open('../overlapBEDFiles/KnownGenes/diseasedMerged.p' ,'rb'))
+healthyOverlapWithKnownGenesPerGene = pickle.load(open('../overlapBEDFiles/KnownGenes/healthyMerged.p' ,'rb'))
+def overlapWithKnownGenesIndicatorPerGene(bedLine):
+	"""
+	Returns a list of indicator variables, one for each gene that is overlapped with
+	E.g. [(overlapGene-uc001aal.1, 1), (overlapGene-uc001aaq.2, 1)]
+	"""
+	info = bedLine[3].split(";")
+	uniqeId = info[1]
+	diseasedSet = diseasedOverlapWithKnownGenesPerGene[uniqeId]
+	healthySet = healthyOverlapWithKnownGenesPerGene[uniqeId]
+	combinedSet = healthySet | diseasedSet
+	finalList = []
+	for gene in combinedSet:
+		finalList.append(("overlapGene-%s"%gene, 1))
+	if len(finalList) > 0:
+		return finalList
 	else:
 		return False

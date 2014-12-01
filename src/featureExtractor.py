@@ -18,7 +18,7 @@ PercentageOfSetForTraining = 80 # A percentage
 # A list of feature extracting functions (one for each feature). 
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
-listOfFeatures = [features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+listOfFeatures = [features.overlapWithKnownGenesIndicatorPerGene, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
 
 # Two input files, diseased or healthy in .bed format
 input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
@@ -53,10 +53,15 @@ for (file, result) in files:
 		
 		# For each feature extraction function, run it on this input line
 		for featureFunc in listOfFeatures:
-			feature = featureFunc(lineList)
-			if feature:
-				(key, value) = feature
-				if key: sparseFeatures[key] = value
+			features = featureFunc(lineList)
+			if features:
+				if type(features) is list:
+					for feature in features:
+						(key, value) = feature
+						if key: sparseFeatures[key] = value
+				else:
+					(key, value) = features
+					if key: sparseFeatures[key] = value
 
 		# Add this entry into the training or testing set
 		if(random.randint(1,100) <= PercentageOfSetForTraining):
