@@ -33,14 +33,15 @@ def chromosome(bedLine):
 	"""
 	Chromosome number. (indicator variable)
 	Example keys:
-	"chrom1" or "chrom2" or "chrom20"
+	"chr1" or "chr2" or "chr20"
 	"""
 	chrom = bedLine[0].lower()
 	return (chrom, 1)
 
 def absoluteStartPosition(bedLine):
 	"""
-	Aboslute start position of the CNV (in the entire genome.)
+	Aboslute start position of the CNV (in the entire genome)
+	This is thus a combination of startPosition and chromosome #
 	"""
 	start = int(bedLine[1])
 	chrom = bedLine[0].lower()
@@ -56,7 +57,7 @@ def absoluteStartPosition(bedLine):
 
 def length(bedLine):
 	"""
-	The length in basepairs of teh CNV
+	The length in basepairs of the CNV
 	"""
 	start = int(bedLine[1])
 	end = int(bedLine[2])
