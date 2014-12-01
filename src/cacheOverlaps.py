@@ -3,12 +3,6 @@ import collections
 import pickle
 import random
 
-def cacheGeneralIndicatorOverlaps():
-	"""
-	This converts overlap results to easy to searh python objects before running the feature extraction step (featureExtractor.py)
-
-
-	"""
 	overlapSelectPath = "../../../tools/overlapSelect"
 
 	# Two input files, diseased or healthy in .bed format
@@ -16,6 +10,12 @@ def cacheGeneralIndicatorOverlaps():
 	input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
 	inoutFiles = [(input_diseased_bed_file, "diseased"),(input_healthy_bed_file, "healthy")]
 
+def cacheGeneralIndicatorOverlaps():
+	"""
+	This converts overlap results to easy to searh python objects before running the feature extraction step (featureExtractor.py)
+
+
+	"""
 	# All the foldernames that have overlap .bed files
 	folders = ["knownGenesCodingExons", "RegulatoryBroadEnhancers", "RegulatoryVistaEnhancers", "KnownGenes", "Microsatellites"]
 	for folder in folders:
