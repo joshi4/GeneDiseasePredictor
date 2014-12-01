@@ -1,7 +1,7 @@
 How to Extract our Training/Testing feature set
 ==========================
 
-### Step 1: Run src/cacheOverlaps.py
+### Step 1 (Optional): Run src/cacheOverlaps.py
 This generates the necessary overlap .bed files required for some of the features. IMPORTANT: You have to have overlapSelect tool installed on your computer, and set the "overlapSelectPath" in cacheOverlaps.py to point to the correct location for this file to run. If you don't have overlapSelect on your computer (like me) you have to run all these steps on corn and make sure that path is correct. 
 
 ### Step 2: See what features are available
