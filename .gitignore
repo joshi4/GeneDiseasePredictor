@@ -2,3 +2,5 @@
 *.swp
 *.pyc
 *.p
+src/violinTesting.bed
+src/violinTraining.bed
