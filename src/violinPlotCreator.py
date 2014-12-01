@@ -7,8 +7,6 @@ import pandas as pd
 import logistic_regression as logReg
 import pickle
 
-order = [ 'chr' + str(x) for x in range(1,23) ]
-
 pickledTestFile = './testingSet.p'
 pickledTrainingFile = './trainingSet.p'
 parallelIdFile = './violinTesting.bed'
@@ -21,8 +19,8 @@ def plotViolin(X, y, columnNames, xColumn, yColumn):
   dfX_diseased = pd.DataFrame(X_diseased)
   dfX_diseased.columns = columnNames
   f, (ax_upper, ax_lower) = plt.subplots(2, 1)
-  sns.violinplot(dfX_healthy[yColumn], dfX_healthy[xColumn], inner='None', ax=ax_upper, bw=.05, order=order)
-  sns.violinplot(dfX_diseased[yColumn], dfX_diseased[xColumn], inner='None', ax=ax_lower, bw=.05, order=order)
+  sns.violinplot(dfX_healthy[yColumn], dfX_healthy[xColumn], inner='None', ax=ax_upper, bw=.05, color=['red', 'blue'])
+  sns.violinplot(dfX_diseased[yColumn], dfX_diseased[xColumn], inner='None', ax=ax_lower, bw=.05, color=['red', 'blue'])
   plt.show()
 
 def plotViolinFromReal():
@@ -34,11 +32,18 @@ def plotViolinFromReal():
       chrom = row[0]
       start = int(row[1])
       score = float(row[2])
-      X.append([chrom, start])
+      num = chrom[3:]
+      if (len(num) == 1):
+        num = '0' + num
+      X.append([num + 'r', start])
+      y.append(score)
+      X.append([num + 'p', start])
       y.append(score)
   plotViolin(np.array(X), np.array(y), ['chr', 'start'], 'chr', 'start')
 
 def plotViolinFromPredictor(predictor):
+  X = []
+  y = []
   testExamples = pickle.load(open(pickledTestFile, 'rb'))
   predIter = iter(testExamples)
   with open(parallelIdFile) as f:
@@ -46,14 +51,20 @@ def plotViolinFromPredictor(predictor):
     for row in reader:
       chrom = row[0]
       start = int(row[1])
-      feature = next(predIter)
-      score = predictor(feature)
-      X.append([chrom, start])
-      y.append(score)
+      actual = float(row[2])
+      feature,_ = next(predIter)
+      predicted = predictor(feature)
+      num = chrom[3:]
+      if (len(num) == 1):
+        num = '0' + num
+      X.append([num + 'r', start])
+      y.append(actual)
+      X.append([num + 'p', start])
+      y.append(predicted)
   plotViolin(np.array(X), np.array(y), ['chr', 'start'], 'chr', 'start')
 
 if __name__ == "__main__":
   # plotViolinFromReal()
-  lr = logReg.LogisticRegression()
-  lr.learn_boundary(pickledTrainingFile)
-  plotViolinFromPredictor(lr.predict)
+  classifier = logReg.HingeLossClassifier()
+  classifier.learn_boundary(pickledTrainingFile)
+  plotViolinFromPredictor(classifier.predict)
