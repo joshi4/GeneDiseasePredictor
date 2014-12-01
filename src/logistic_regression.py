@@ -76,6 +76,7 @@ class LogisticRegression():
         self.numIters = 10 # num of iterations for SGD
         self.eta = 0.9 # hyper-parameter
         self.predictDiseased = 0 
+        self.penalizeDiseased = 10.0# parameter to adjust the margin so that diseased is penalized more. 
 
     def logistic_func(self, margin):
         result = 1.0/(1 + math.exp(margin))
@@ -97,7 +98,9 @@ class LogisticRegression():
 
     def calculate_margin(self,feature,weights,training_label):
        score = util.dot_product(weights, feature)
-       return training_label*score *1.0
+       normal_margin = training_label*score *1.0
+       margin = normal_margin if label == -1 else normal_margin/self.penalizeDiseased
+       return margin
 
     def update_weights_with_derivative(self, feature,weight,training_label):
        """
