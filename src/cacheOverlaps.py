@@ -3,12 +3,12 @@ import collections
 import pickle
 import random
 
-	overlapSelectPath = "../../../tools/overlapSelect"
+overlapSelectPath = "../../../tools/overlapSelect"
 
-	# Two input files, diseased or healthy in .bed format
-	input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
-	input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
-	inoutFiles = [(input_diseased_bed_file, "diseased"),(input_healthy_bed_file, "healthy")]
+# Two input files, diseased or healthy in .bed format
+input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
+input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
+inoutFiles = [(input_diseased_bed_file, "diseased"),(input_healthy_bed_file, "healthy")]
 
 def cacheGeneralIndicatorOverlaps():
 	"""
@@ -51,24 +51,33 @@ def cacheKnownGeneIndicatorsPerGene():
 	"""
 
 	path = "../overlapBEDFiles/KnownGenes"
-	fileToOverlapWith = "%s/baseToOverlapWith.bed"
-	newTempFile = "%s/temp.bed"
+	fileToOverlapWith = "%s/baseToOverlapWith.bed" % (path)
+	newTempFile = "%s/temp.bed" % (path)
 	# First cut the KnownGenes.bed file to remove uneccessary columns
 	os.system('cut -f 1-4 %s > %s' % (fileToOverlapWith, newTempFile))
 	for (inputFile, outputFile) in inoutFiles:
 		output = "%s/%sMerged.bed" % (path, outputFile)
 		try:
-			os.system('%s %s %s %s' % (overlapSelectPath, newTempFile, inputFile, output))
+			os.system('%s %s %s %s -mergeOutput' % (overlapSelectPath, newTempFile, inputFile, output))
 		except IOError:
-			print "Error with command: %s %s %s %s" % (overlapSelectPath, newTempFile, inputFile, output)
+			print "Error with command: %s %s %s %s -mergeOutput" % (overlapSelectPath, newTempFile, inputFile, output)
 		# Now read in the merged overlap files and convert them to python Counter
 		fin = open(output, 'r')
-		data = collections.Counter()
+		data = {}
 		for line in fin:
-			# Do stuff
+			# Get the entry unique ID
+			metaList = line.split()[3].split(";")
+			uniqueId = metaList[1]
+			# Get the genes names it overlaps with
 			lineList = line.split()
-			index = 3
-
+			colIndex = 3
+			while( (len(lineList)-1) > colIndex ):
+				colIndex += 4
+				overlappedGeneName = lineList[colIndex]
+				if unique in data:
+					data[unique].append(overlappedGeneName)
+				else:
+					data[unique] = [overlappedGeneName]
 
 		# Save pickle file for later use
 		outputPickleFile = "%s/%sMerged.p" % (path, outputFile)
