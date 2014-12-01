@@ -14,6 +14,7 @@ return:
 """
 
 overlapSelectPath = "../../../tools/overlapSelect"
+#overlapSelectPath = "overlapSelect" (use this if you have overlapSelect in your $PATH) 
 
 def startPosition(bedLine):
 	"""

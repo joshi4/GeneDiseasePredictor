@@ -77,6 +77,5 @@ def cacheKnownGeneIndicatorsPerGene():
 		#os.system('rm %s' % (output))
 		#os.system('rm %s' % (newTempFile))
 
-
 if __name__ == "__main__":
 	cacheKnownGeneIndicatorsPerGene()
