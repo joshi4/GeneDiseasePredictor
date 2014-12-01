@@ -15,17 +15,16 @@ testingSet.p
 # The dataset is split into training and testing sets
 PercentageOfSetForTraining = 80 # A percentage
 
-# Two input files, diseased or healthy in .bed format
-input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
-input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
-
-# To loop through the two files
-files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
-
 # A list of feature extracting functions (one for each feature). 
 # Each must take the .bed line as argument, and return the key that is to be set to 1
 # These functions are defined in features.py and must have the same argument and return type structure
-listOfFeatures = [features.logLength, features.absoluteStartPosition, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+listOfFeatures = [features.logOfLength, features.startPosition, features.absoluteStartPosition, features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+
+# Two input files, diseased or healthy in .bed format
+input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
+input_healthy_bed_file = "../dbVarData/nstd100.healthy.vcf.bed"
+# To loop through the two files
+files = [(input_diseased_bed_file, 1.0), (input_healthy_bed_file, -1.0)]
 
 # To save the results (sparse representation of features)
 dataTesting = []

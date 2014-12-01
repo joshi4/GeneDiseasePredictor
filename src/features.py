@@ -63,9 +63,9 @@ def length(bedLine):
 	length = end - start
 	return ("length", length)
 
-def logLength(bedLine):
+def logOfLength(bedLine):
 	"""
-	The log (base 10) of the CNV
+	The log (base 10) of the CNV length
 	"""
 	start = int(bedLine[1])
 	end = int(bedLine[2])
@@ -178,6 +178,9 @@ def overlapWithMicroSats(bedLine):
 	else:
 		return False
 
+# ----- NOTE --------
+# Due to the /bed file being to large for github, this feature is not currently working...
+# -------------------
 #iseasedOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/diseased.p' ,'rb'))
 #healthyOverlapWithKnownRepeats = pickle.load(open('../overlapBEDFiles/KnownRepeats/healthy.p' ,'rb'))
 def overlapWithKnownRepeats(bedLine):
