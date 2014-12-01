@@ -20,8 +20,8 @@ def increment(d1,scale,d2):
 
 def evaluate(pickled_test_file,predictor):
     test_examples = pickle.load(open(pickled_test_file, 'rb'))
-    test_data = test_examples[20000:31001]  + test_examples[1000:3500]
-    #test_data = test_examples
+    #test_data = test_examples[20000:31001]  + test_examples[1000:3500]
+    test_data = test_examples
     errors = 0 
     false_positive = 0 
     false_negative = 0 
