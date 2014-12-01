@@ -31,6 +31,9 @@ listOfFeatures = [features.logLength, features.absoluteStartPosition, features.o
 dataTesting = []
 dataTraining = []
 
+violinTraining = open('violinTraining.bed', 'w')
+violinTesting = open('violinTesting.bed', 'w')
+
 # Loop through each file (healthy & diseased)
 for (file, result) in files:
 	# Each line is a tuple of (features, result) where:
@@ -44,6 +47,10 @@ for (file, result) in files:
 
 		sparseFeatures = collections.Counter()
 		lineList = line.split()
+
+		startPos = int(lineList[1])
+		chrom = lineList[0]
+		violinLine = "%s\t%s\t%s\n" % (chrom, startPos, result)
 		
 		# For each feature extraction function, run it on this input line
 		for featureFunc in listOfFeatures:
@@ -55,8 +62,13 @@ for (file, result) in files:
 		# Add this entry into the training or testing set
 		if(random.randint(1,100) <= PercentageOfSetForTraining):
 			dataTraining.append((sparseFeatures, result))
+			violinTraining.write(violinLine)
 		else:
 			dataTesting.append((sparseFeatures, result))
+			violinTesting.write(violinLine)
+
+violinTesting.close()
+violinTraining.close()
 
 # Save the results to pickle files for later use
 pickle.dump(dataTraining, open("trainingSet.p", "wb"))	
