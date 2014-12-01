@@ -13,7 +13,8 @@ return:
 	a (key, value) tuple where key is the feature's key and value is the features value (the value is simply 1 for indicator variables)
 """
 
-overlapSelectPath = "../../../tools/overlapSelect"
+#overlapSelectPath = "../../../tools/overlapSelect"
+overlapSelectPath = "overlapSelect"
 
 def startPosition(bedLine):
 	"""
