@@ -152,16 +152,16 @@ class LogisticRegression():
         return loss 
 
 def main():
-    #hl = HingeLossClassifier()
-    #hl.learn_boundary(pickled_training_file)
-    #util.evaluate(pickled_testing_file, hl.predict)
-    #print hl.weights 
+    hl = HingeLossClassifier()
+    hl.learn_boundary(pickled_training_file)
+    util.evaluate(pickled_testing_file, hl.predict)
+    print hl.weights 
 
-    lr = LogisticRegression()
-    lr.learn_boundary(pickled_training_file)
-    util.evaluate(pickled_testing_file, lr.predict) 
-    print lr.weights 
-    print lr.predictDiseased 
+    #lr = LogisticRegression()
+    #lr.learn_boundary(pickled_training_file)
+    #util.evaluate(pickled_testing_file, lr.predict) 
+    #print lr.weights 
+    #print lr.predictDiseased 
 
 
 if __name__ == '__main__':
