@@ -31,6 +31,6 @@ class Kdistance():
         dot_product = self.dotProduct(a,b)
         magnitude_a = self.magnitude(a)
         magnitude_b = self.magnitude(b)
-        return math.acos(dot_product/(magnitude_a*magnitude_b))*180/math.pi
+        return 2* math.acos(dot_product/(magnitude_a*magnitude_b))/math.pi
 
 
