@@ -79,7 +79,7 @@ class LogisticRegression():
         self.eta = 1.0 #0.09 # hyper-parameter
         self.predictDiseased = 0 
         self.healthy_weight = 1.0
-        self.diseased_weight = 10.0
+        self.diseased_weight = 9.0
 
     def logistic_func(self, margin):
         if margin > 500:
