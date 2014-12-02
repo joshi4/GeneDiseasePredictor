@@ -20,7 +20,7 @@ PercentageOfSetForTraining = 80 # A percentage
 # These functions are defined in features.py and must have the same argument and return type structure
 #listOfFeatures = [features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.logOfLength, features.svType, features.overlapWithKnownGenesIndicatorPerGene]
 
-listOfFeatures = [features.overlapWithMicroSats, features.overlapWithKnownGenes, features.overlapWithVistaEnhancer, features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
+listOfFeatures = [features.overlapWithCodingExons, features.chromosome, features.cnvLength, features.svType]
 
 # Two input files, diseased or healthy in .bed format
 input_diseased_bed_file = "../dbVarData/nstd100.diseased.vcf.bed"
