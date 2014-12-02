@@ -78,7 +78,8 @@ class LogisticRegression():
         self.numIters = 10 # num of iterations for SGD
         self.eta = 1.0 #0.09 # hyper-parameter
         self.predictDiseased = 0 
-        self.penalizeDiseased = 1.0# parameter to adjust the margin so that diseased is penalized more. 
+        self.healthy_weight = 1.0
+        self.diseased_weight = 10.0
 
     def logistic_func(self, margin):
         if margin > 500:
@@ -109,7 +110,6 @@ class LogisticRegression():
     def calculate_margin(self,feature,weights,training_label):
        score = util.dot_product(weights, feature)
        normal_margin = training_label*score *1.0
-       #margin = normal_margin if training_label == -1 else normal_margin*1.0/self.penalizeDiseased
        return normal_margin
 
     def update_weights_with_derivative(self, feature,weight,training_label):
@@ -119,11 +119,9 @@ class LogisticRegression():
        where z is the margin. 
        """
        margin = self.calculate_margin(feature,weight,training_label)
-       update_coeff = self.logistic_func(margin)*training_label
+       vector_weight = self.diseased_weight if training_label == 1 else self.healthy_weight
+       update_coeff = self.logistic_func(margin)*training_label* vector_weight
        util.increment(weight,self.eta * update_coeff, feature)  
-       if training_label == 1.0:
-           update_coeff = self.predict(feature) - 1
-           util.increment(weight,self.penalizeDiseased*self.eta* update_coeff, feature)
 
 
 
