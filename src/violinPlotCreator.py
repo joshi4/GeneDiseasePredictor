@@ -7,7 +7,7 @@ import pandas as pd
 import logistic_regression
 import pickle
 import kmeans
-# import k_nearest_neighbours
+import k_nearest_neighbours
 
 pickledTestFile = './testingSet.p'
 pickledTrainingFile = './trainingSet.p'
@@ -126,10 +126,10 @@ if __name__ == "__main__":
   # plotViolinFromPredictor(classifier.predict, 'hingeLoss')
 
   # Logistic Regression:
-  print 'Logistic Regression:'
-  classifier = logistic_regression.LogisticRegression()
-  classifier.learn_boundary(pickledTrainingFile)
-  plotViolinFromPredictor(classifier.predict, 'logisticRegression')
+  # print 'Logistic Regression:'
+  # classifier = logistic_regression.LogisticRegression()
+  # classifier.learn_boundary(pickledTrainingFile)
+  # plotViolinFromPredictor(classifier.predict, 'logisticRegression')
 
   # print 'New features:'
   # execfile('featureExtractor.py')
@@ -143,7 +143,7 @@ if __name__ == "__main__":
   # plotViolinFromPredictor(classifier.test, 'kmeans')
 
   # K Nearest Neighbors:
-  # print 'K Nearest Neighbors'
-  # nn = k_nearest_neighbours.NearestNeighbors(5, pickledTrainingFile)
-  # plotViolinFromPredictor(nn.predict, 'knn')
+  print 'K Nearest Neighbors'
+  nn = k_nearest_neighbours.NearestNeighbors(5, pickledTrainingFile)
+  plotViolinFromPredictor(nn.predict, 'knn')
 

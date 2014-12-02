@@ -97,6 +97,6 @@ class NearestNeighbors():
 #        print "label = %d and result = %d" %(label,result)
 #        break 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
   nn = NearestNeighbors(5,"trainingSet.p")
   util.evaluate("testingSet.p", nn.predict)
