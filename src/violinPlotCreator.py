@@ -7,7 +7,7 @@ import pandas as pd
 import logistic_regression
 import pickle
 import kmeans
-import k_nearest_neighbours
+# import k_nearest_neighbours
 
 pickledTestFile = './testingSet.p'
 pickledTrainingFile = './trainingSet.p'
@@ -120,10 +120,16 @@ if __name__ == "__main__":
   # plotViolinFromReal('realData.png')
 
   # Hinge Loss:
-  print 'Hinge Loss:'
-  classifier = logistic_regression.HingeLossClassifier()
+  # print 'Hinge Loss:'
+  # classifier = logistic_regression.HingeLossClassifier()
+  # classifier.learn_boundary(pickledTrainingFile)
+  # plotViolinFromPredictor(classifier.predict, 'hingeLoss')
+
+  # Logistic Regression:
+  print 'Logistic Regression:'
+  classifier = logistic_regression.LogisticRegression()
   classifier.learn_boundary(pickledTrainingFile)
-  plotViolinFromPredictor(classifier.predict, 'hingeLoss')
+  plotViolinFromPredictor(classifier.predict, 'logisticRegression')
 
   # print 'New features:'
   # execfile('featureExtractor.py')
